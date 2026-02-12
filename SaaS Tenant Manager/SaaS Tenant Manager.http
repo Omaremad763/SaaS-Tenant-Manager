@@ -1,0 +1,6 @@
+@SaaS_Tenant_Manager_HostAddress = http://localhost:5100
+
+GET {{SaaS_Tenant_Manager_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
