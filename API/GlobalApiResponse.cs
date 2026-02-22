@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Presentation
+namespace GlobalResponse
 {
     public class GlobalApiResponse<T>
     {

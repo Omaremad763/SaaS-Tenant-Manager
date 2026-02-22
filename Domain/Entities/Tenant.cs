@@ -11,6 +11,7 @@ public class Tenant : BaseEntity
     public string Slug { get; set; } = string.Empty; // Unique identifier in URL (e.g., "google")
     public string ConnectionString { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
+    public string TenantDomain { get; set; } = string.Empty;
 
     // Relationships
     public virtual ICollection<ApiLog> ApiLogs { get; set; } = new List<ApiLog>();
