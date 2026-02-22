@@ -1,12 +1,19 @@
 ﻿using Application;
+using Application.Contracts;
+
+using Domain.Entities;
 
 using FluentValidation;
 
-using Infrastructure.Persistence;
+using Infra.Persistence;
 
+using Infrastructure.Contracts_Implementation;
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-namespace Infrastructure.Extentions;
+namespace Infra.Extentions;
+
 public static class DependenciesCollector
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
@@ -16,12 +23,13 @@ public static class DependenciesCollector
         services.AddDbContext<ApplicationDbContext>
          (options =>
          {
-             options.UseNpgsql((DatabaseConfig));
+             options.UseNpgsql(DatabaseConfig);
          });
-        //services.AddScoped<IAI_AnalyticsServices, AI_AnalyticsServices>();
-        //services.AddHttpClient<IAI_InsightService, Ai_InsightService>();
-        //services.AddScoped<IUnitofWork, UnitofWork>();
-        //services.AddScoped<IData_InegstionService, Data_InegstionService>();
+        services.AddScoped<ISaasServices, SaasServices>();
+        services.AddScoped<IUnitofWork, UnitofWork>();
+        services.AddAutoMapper(cfg => {
+            cfg.AddProfile<AutoMapperProfile>();
+        }, typeof(AutoMapperProfile).Assembly);
         #region Mediator
         services.AddMediatR(cfg =>
         {
@@ -30,6 +38,15 @@ public static class DependenciesCollector
         });
         services.AddValidatorsFromAssembly(assembly);
         #endregion
+        services.AddIdentity<User, UserRoles>(options =>
+        {
+            options.Password.RequireDigit = true;
+            options.Password.RequiredLength = 8;
+            options.User.RequireUniqueEmail = true;
+        })
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
+
         return services;
     }
 }

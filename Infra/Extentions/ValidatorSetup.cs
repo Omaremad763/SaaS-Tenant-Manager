@@ -8,7 +8,7 @@ using FluentValidation;
 
 using MediatR;
 
-namespace Infrastructure.Extentions
+namespace Infra.Extentions
 {
     public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
       where TRequest : IRequest<TResponse>

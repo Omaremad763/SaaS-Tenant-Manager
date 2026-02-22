@@ -1,18 +1,18 @@
-﻿//using Application.DTOS;
+﻿using Application.DTOs;
 
-//using AutoMapper;
+using AutoMapper;
 
-//using Domain.Entites;
+using Domain.Entities;
 
-//namespace Application;
+namespace Application;
 
-//public class AutoMapperProfile : Profile
-//{
-//    public AutoMapperProfile()
-//    {
-//        CreateMap<DataBatch, UploadStatusDto>();
-//        CreateMap<FinancialRecord, FinancialRecordDto>().ReverseMap();
+public class AutoMapperProfile : Profile
+{
+    public AutoMapperProfile()
+    {
+        CreateMap<TenantRegistrationDto, Tenant>();
+        CreateMap<GetTenantDto, Tenant>().ReverseMap();
 
-//    }
-//}
+    }
+}
 
