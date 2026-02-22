@@ -381,3 +381,5 @@ FodyWeavers.xsd
 *.xlsx#
 /تجربة ملف Excel لبيانات مالية.xlsx
 /تجربة ملف Excel لبيانات مالية.xlsx
+*.eps
+*.svg
