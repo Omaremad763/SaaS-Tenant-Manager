@@ -1,9 +1,9 @@
-﻿namespace Middleware
+﻿namespace SaaS_Tenant_Manager.Middlewares
 {
-    using GlobalResponse;
-
     using System.Net;
     using System.Text.Json;
+
+    using SaaS_Tenant_Manager;
 
     public class ExceptionMiddleware
     {

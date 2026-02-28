@@ -8,7 +8,7 @@ public class TenantSecurityMiddleware
 
     public TenantSecurityMiddleware(RequestDelegate next) => _next = next;
 
-    public async Task InvokeAsync(HttpContext context, IUnitofWork unitOfWork)
+    public async Task InvokeAsync(HttpContext context, ISaasServices services)
     {
         if (context.User.Identity?.IsAuthenticated == true)
         {
@@ -23,7 +23,7 @@ public class TenantSecurityMiddleware
             var requestdomain = context.Request.RouteValues["tenantSlug"]?.ToString();
             if (!string.IsNullOrEmpty(requestdomain))
             {
-                var tenant = await unitOfWork.userRepository.GetTenantByDomainAsync(requestdomain);
+                var tenant = await services.TenantService.GetTenantByDomainAsync(requestdomain);
 
                 if (tenant == null || tenant.Id.ToString() != userTenantId)
                 {

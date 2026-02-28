@@ -1,8 +1,13 @@
 ﻿using Application.Contracts;
 
+using Hangfire;
+
 using Infra.Extentions;
 
-using Middleware;
+using Microsoft.AspNetCore.Builder;
+
+using SaaS_Tenant_Manager;
+using SaaS_Tenant_Manager.Middlewares;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddServices();
@@ -34,12 +39,19 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-app.UseMiddleware<ExceptionMiddleware>();
-app.UseMiddleware<TenantSecurityMiddleware>();
+app.UseHttpsRedirection();
 app.UseCors("VercelPolicy");
-app.UseHttpsRedirection(); 
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<TenantSecurityMiddleware>();
+app.UseMiddleware<FeatureAccessMiddleware>();
+app.UseMiddleware<ApiLogMiddleware>();
+app.UseHangfireDashboard("/HangfireSass", new DashboardOptions
+{
+    Authorization = new[] { new HangfireAdminFilter() },
+    DashboardTitle = "SaaS Manager - Background Jobs"
+});
 app.MapControllers();
-
 app.Run();
