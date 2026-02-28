@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
+using Application.Enums;
 
-namespace Application.Contracts.Auth
+namespace Application.Contracts.IService
 {
     public interface IUserService
     {

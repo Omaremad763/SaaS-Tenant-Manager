@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application;
-public enum SystemAdminSeedResultEnum
+namespace Application.Enums;
+public enum PlanTier
 {
-    AlreadyExists,
-    Created,
-    Failed
+    Free = 1,
+    Pro = 2,
+    Enterprise = 3
 }
-
-

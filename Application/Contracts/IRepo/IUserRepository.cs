@@ -1,8 +1,10 @@
-﻿using Domain.Entities;
+﻿using Application.Enums;
+
+using Domain.Entities.MasterDB;
 
 using Microsoft.AspNetCore.Identity;
 
-namespace Application.Contracts.Auth
+namespace Application.Contracts.IRepo
 {
     public interface IUserRepository
     {
@@ -11,9 +13,6 @@ namespace Application.Contracts.Auth
         Task<IList<string>> GetRolesAsync(User user);
         Task<User?> FindByEmailAsync( string Email);
         Task<bool> CheckPasswordAsync(User user, string password);
-        Task AddTenantAsync(Tenant tenant);
-        Task<Tenant?> GetTenantBySlugAndDomainAsync(string slug, string domain);
-        Task<Tenant?> GetTenantByDomainAsync(string domain);
         Task<SystemAdminSeedResultEnum> EnsureSystemAdminAsync();
      }
 }
