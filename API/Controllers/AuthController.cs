@@ -3,10 +3,9 @@ using Application.DTOs;
 
 using MediatR;
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GlobalResponse.Controllers;
+namespace SaaS_Tenant_Manager.Controllers;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -22,24 +21,24 @@ namespace GlobalResponse.Controllers;
             return Ok(response);
         }
 
-    [HttpPost]
-    [Route("RegisterUser")]
-    public async Task<IActionResult> RegisterUser([FromBody] TenantUserRegistraionDto dto)
-    {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await mediator.Send(new RegisterTenantUserCommand(dto));
-        var response = ApiResponse.Success(result);
-        return Ok(response);
+        [HttpPost]
+        [Route("RegisterUser")]
+        public async Task<IActionResult> RegisterUser([FromBody] TenantUserRegistraionDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var result = await mediator.Send(new RegisterTenantUserCommand(dto));
+            var response = ApiResponse.Success(result);
+            return Ok(response);
 
-    }
-    [HttpPost]
-    [Route("Login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto)
-    {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        var result = await mediator.Send(new LoginCommand(dto));
-        var response = ApiResponse.Success(result);
-        return Ok(response);
-    }
+        }
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var result = await mediator.Send(new LoginCommand(dto));
+            var response = ApiResponse.Success(result);
+            return Ok(response);
+        }
 }
 

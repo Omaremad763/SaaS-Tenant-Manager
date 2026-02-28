@@ -1,11 +1,17 @@
-﻿using Application;
-using Application.Contracts;
+﻿using ApilogsServiceImp;
 
-using Domain.Entities;
+using Application;
+using Application.Contracts;
+using Application.Contracts.IService;
+
+using Domain.Entities.MasterDB;
 
 using FluentValidation;
 
-using Infra.Persistence;
+using Hangfire;
+using Hangfire.PostgreSql;
+
+using Infra.Persistence.Contexts;
 
 using Infrastructure.Contracts_Implementation;
 
@@ -20,12 +26,13 @@ public static class DependenciesCollector
     {
         var assembly = typeof(IApplicationHandlerMarker).Assembly;
         var DatabaseConfig = Environment.GetEnvironmentVariable("SaasDatabaseConfig");
-        services.AddDbContext<ApplicationDbContext>
+        services.AddDbContext<MasterDbContext>
          (options =>
          {
              options.UseNpgsql(DatabaseConfig);
          });
         services.AddScoped<ISaasServices, SaasServices>();
+        services.AddScoped<IApiLogService, ApiLogService>();
         services.AddScoped<IUnitofWork, UnitofWork>();
         services.AddAutoMapper(cfg => {
             cfg.AddProfile<AutoMapperProfile>();
@@ -44,8 +51,20 @@ public static class DependenciesCollector
             options.Password.RequiredLength = 8;
             options.User.RequireUniqueEmail = true;
         })
-        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddEntityFrameworkStores<MasterDbContext>()
         .AddDefaultTokenProviders();
+        #region Hangifre
+
+        services.AddHangfire(config => config
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(options =>
+        {
+            options.UseNpgsqlConnection(DatabaseConfig);
+        }));
+            services.AddHangfireServer();
+            #endregion
 
         return services;
     }
