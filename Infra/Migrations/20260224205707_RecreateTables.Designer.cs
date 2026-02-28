@@ -15,8 +15,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infra.Migrations
 {
     [DbContext(typeof(MasterDbContext))]
-    [Migration("20260215110504_identity")]
-    partial class identity
+    [Migration("20260224205707_RecreateTables")]
+    partial class RecreateTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,9 +45,14 @@ namespace Infra.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("IpAddress")
+                    b.Property<string>("HttpMethod")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("StatusCode")
                         .HasColumnType("integer");
@@ -55,14 +60,17 @@ namespace Infra.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId");
+                    b.HasIndex("TenantId", "CreatedAt");
 
                     b.ToTable("ApiLogs");
                 });
 
-            modelBuilder.Entity("Domain.Entities.FeatureFlag", b =>
+            modelBuilder.Entity("Domain.Entities.Feature", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,6 +78,14 @@ namespace Infra.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FeatureCode")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("FeatureName")
                         .IsRequired()
@@ -80,14 +96,39 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FeatureFlags");
+                    b.ToTable("Features");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PlanFeature", b =>
+                {
+                    b.Property<Guid>("SubscriptionPlanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FeatureId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsEnabledForPlan")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("SubscriptionPlanId", "FeatureId");
+
+                    b.HasIndex("FeatureId");
+
+                    b.HasIndex("SubscriptionPlanId", "FeatureId")
+                        .IsUnique();
+
+                    b.ToTable("PlanFeatures");
                 });
 
             modelBuilder.Entity("Domain.Entities.SubscriptionPlan", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -95,13 +136,22 @@ namespace Infra.Migrations
                     b.Property<int>("MaxRequestsPerMinute")
                         .HasColumnType("integer");
 
+                    b.Property<int>("MaxUsers")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PlanName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<int>("PlanTier")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("StorageLimitGb")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -134,12 +184,49 @@ namespace Infra.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("TenantDomain")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Slug")
                         .IsUnique();
 
+                    b.HasIndex("TenantDomain")
+                        .IsUnique();
+
                     b.ToTable("Tenants");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TenantSubscription", b =>
+                {
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SubscriptionPlanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TenantId", "SubscriptionPlanId");
+
+                    b.HasIndex("SubscriptionPlanId");
+
+                    b.ToTable("TenantSubscriptions");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -161,11 +248,6 @@ namespace Infra.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<bool>("IsSystemAdmin")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -191,6 +273,10 @@ namespace Infra.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TenantDomain")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid?>("TenantId")
@@ -352,6 +438,44 @@ namespace Infra.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PlanFeature", b =>
+                {
+                    b.HasOne("Domain.Entities.Feature", "FeatureTable")
+                        .WithMany()
+                        .HasForeignKey("FeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.SubscriptionPlan", "SubscriptionPlan")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FeatureTable");
+
+                    b.Navigation("SubscriptionPlan");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TenantSubscription", b =>
+                {
+                    b.HasOne("Domain.Entities.SubscriptionPlan", "SubscriptionPlanTable")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubscriptionPlanTable");
 
                     b.Navigation("Tenant");
                 });

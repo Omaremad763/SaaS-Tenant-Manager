@@ -4,12 +4,13 @@ using System.Text;
 
 using Application;
 using Application.Contracts;
-using Application.Contracts.Auth;
+using Application.Contracts.IService;
 using Application.DTOs;
+using Application.Enums;
 
 using AutoMapper;
 
-using Domain.Entities;
+using Domain.Entities.MasterDB;
 
 using Infra;
 
@@ -18,18 +19,18 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-using SystemAdminSeedResultEnum = Application.SystemAdminSeedResultEnum;
-
+using SystemAdminSeedResultEnum = Application.Enums.SystemAdminSeedResultEnum;
+namespace User_service_Imp;
 public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitofwork) : IUserService
 {
 
-    private string GenerateJwt(User user, IList<string> roles)
+    private static string GenerateJwt(User user, IList<string> roles)
     {
         var claims = new List<Claim>
     {
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email!),
-        new Claim("TenantId", user.TenantId?.ToString() ?? string.Empty)
+        new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new (ClaimTypes.Email, user.Email!),
+        new ("TenantId", user.TenantId?.ToString() ?? string.Empty)
     };
 
         foreach (var role in roles)
@@ -62,34 +63,55 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
         }.ToString();
         Tenant? mapping = _mapper.Map<Tenant>(tenant);
         mapping.ConnectionString = TenantDBConnection;
-        await unitofwork.userRepository.AddTenantAsync(mapping);
+        await unitofwork.TenantRepo.AddTenantAsync(mapping);
         return mapping;
     }
     public async Task<ProvisioningStatusDto> RegisterTenantAdmin(TenantRegistrationDto dto)
     {
         var domainFromEmail = dto.Email.Split('@')[1];
-        var tenant = await unitofwork.userRepository.GetTenantBySlugAndDomainAsync(dto.Slug, domainFromEmail);
+        var tenant = await unitofwork.TenantRepo.GetTenantBySlugAndDomainAsync(dto.Slug, domainFromEmail);
         if (tenant != null) return new ProvisioningStatusDto(null, "Failed", "Tenant already exists");
         var dtoWithDomain = dto with { TenantDomain = domainFromEmail };
-        var addTenat = await AddTenantAsync(dtoWithDomain);
-        var user = new User
+        var addTenant = await AddTenantAsync(dtoWithDomain);
+        var defaultPlanEnum = (int)PlanTier.Free;
+        var defaultPlanId= await unitofwork.SubscriptionRepo.GetPlanByIdAsync(defaultPlanEnum);
+        var subscription = new TenantSubscription
         {
-            UserName = dto.Email,
-            Email = dto.Email,
-            TenantId = addTenat.Id,
-            TenantDomain=domainFromEmail
+            TenantId = addTenant.Id,
+            SubscriptionPlanId = Guid.Parse(defaultPlanId.Id.ToString()),
+            StartDate = DateTime.UtcNow,
         };
-        await unitofwork.userRepository.CreateUserWithRoleAsync(user, dto.Password, "TenantAdmin");
-        await unitofwork.CommitAsync();
-        await _mediator.Publish(new TenantCreatedEvent(addTenat.Id, addTenat.ConnectionString));
-        return new ProvisioningStatusDto(addTenat.Id, "In Progress", "Database Proverisiong Started"); ;
+        await unitofwork.TenantSubscriptionRepo.AddTenantSubscriptionAsync(subscription);
+        var planFeatures = await unitofwork.PlanFeatureRepo.GetFeaturesByPlanIdAsync(defaultPlanId.Id);
+        if (planFeatures != null && planFeatures.Any())
+        {
+            var tenantFeatures = planFeatures.Select(pf => new TenantFeature
+            {
+                TenantId = addTenant.Id,
+                FeatureId = pf.FeatureId,
+                CreatedAt = DateTime.UtcNow,
+                IsEnabled = true
+            }).ToList();
+            await unitofwork.TenantFeatureRepo.AddRangeTenantFeaturAsync(tenantFeatures);
+        }
+            var user = new User
+            {
+                UserName = dto.Email,
+                Email = dto.Email,
+                TenantId = addTenant.Id,
+                TenantDomain = domainFromEmail
+            };
+            await _mediator.Publish(new TenantCreatedEvent(addTenant.Id, addTenant.ConnectionString));
+            await unitofwork.UserRepository.CreateUserWithRoleAsync(user, dto.Password, "TenantAdmin");
+            await unitofwork.CommitAsync();
+             return new ProvisioningStatusDto(addTenant.Id, "In Progress", "Database Proverisiong Started"); ;
     }
     public async Task<string> RegisterTenantUser(TenantUserRegistraionDto dto)
     {
         var domainFromEmail = dto.Email.Split('@')[1];
-        var tenant = await unitofwork.userRepository.GetTenantByDomainAsync(domainFromEmail);
+        var tenant = await unitofwork.TenantRepo.GetTenantByDomainAsync(domainFromEmail);
         if (tenant == null) return "Your company domain is not registered in our system.";
-        var existingUser = await unitofwork.userRepository.FindByEmailAsync(dto.Email);
+        var existingUser = await unitofwork.UserRepository.FindByEmailAsync(dto.Email);
         if (existingUser != null) return "User already exists. Please login.";
         var user = new User
         {
@@ -99,7 +121,7 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
             TenantDomain = domainFromEmail
 
         };
-        var result = await unitofwork.userRepository.CreateUserWithRoleAsync(user, dto.Password, "TenantUser");
+        var result = await unitofwork.UserRepository.CreateUserWithRoleAsync(user, dto.Password, "TenantUser");
         if (!result.Succeeded)
         {
             return "Failed Registration. Please try again later.";
@@ -109,15 +131,15 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
     }
     public async Task<string> Login(LoginDto dto)
     {
-        var user = await unitofwork.userRepository.FindByEmailAsync(dto.Email);
-        if (user == null || !await unitofwork.userRepository.CheckPasswordAsync(user, dto.Password))
+        var user = await unitofwork.UserRepository.FindByEmailAsync(dto.Email);
+        if (user == null || !await unitofwork.UserRepository.CheckPasswordAsync(user, dto.Password))
             throw new UnauthorizedAccessException();
 
-        var roles = await unitofwork.userRepository.GetRolesAsync(user);
+        var roles = await unitofwork.UserRepository.GetRolesAsync(user);
         if (!roles.Contains("SystemAdmin"))
         {
             var domain = dto.Email.Split('@').Last().ToLower();
-            var tenant = await unitofwork.userRepository.GetTenantByDomainAsync(domain);
+            var tenant = await unitofwork.TenantRepo.GetTenantByDomainAsync(domain);
 
             if (tenant == null || user.TenantId != tenant.Id)throw new UnauthorizedAccessException("Domain/Tenant mismatch.");
         }
@@ -126,7 +148,8 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
     }
     public async Task<SystemAdminSeedResultEnum> EnsureSystemAdminAsync()
     {
-        var ensureAdmin = await unitofwork.userRepository.EnsureSystemAdminAsync();
+        var ensureAdmin = await unitofwork.UserRepository.EnsureSystemAdminAsync();
         return ensureAdmin;
     }
 }
+                                                                                              

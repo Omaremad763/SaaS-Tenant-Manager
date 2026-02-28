@@ -15,8 +15,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infra.Migrations
 {
     [DbContext(typeof(MasterDbContext))]
-    [Migration("20260215110504_identity")]
-    partial class identity
+    [Migration("20260225192018_makeTenantIdNullable")]
+    partial class makeTenantIdNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,24 +45,32 @@ namespace Infra.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("IpAddress")
+                    b.Property<string>("HttpMethod")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("IpAddress")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("StatusCode")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("TenantId")
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId");
+                    b.HasIndex("TenantId", "CreatedAt");
 
                     b.ToTable("ApiLogs");
                 });
 
-            modelBuilder.Entity("Domain.Entities.FeatureFlag", b =>
+            modelBuilder.Entity("Domain.Entities.Feature", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,6 +78,14 @@ namespace Infra.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FeatureCode")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("FeatureName")
                         .IsRequired()
@@ -80,7 +96,95 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FeatureFlags");
+                    b.ToTable("Features");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1111111-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "",
+                            FeatureCode = "FEAT_AI_INSIGHTS",
+                            FeatureName = "AI Insights",
+                            IsEnabledGlobal = true
+                        },
+                        new
+                        {
+                            Id = new Guid("b2222222-2222-2222-2222-222222222222"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "",
+                            FeatureCode = "FEAT_ADV_REPORTS",
+                            FeatureName = "Advanced Reporting",
+                            IsEnabledGlobal = true
+                        },
+                        new
+                        {
+                            Id = new Guid("f3333333-3333-3333-3333-333333333333"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "",
+                            FeatureCode = "FEAT_MULTI_USER",
+                            FeatureName = "MultiUser",
+                            IsEnabledGlobal = true
+                        });
+                });
+
+            modelBuilder.Entity("Domain.Entities.PlanFeature", b =>
+                {
+                    b.Property<Guid>("SubscriptionPlanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FeatureId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsEnabledForPlan")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("SubscriptionPlanId", "FeatureId");
+
+                    b.HasIndex("FeatureId");
+
+                    b.HasIndex("SubscriptionPlanId", "FeatureId")
+                        .IsUnique();
+
+                    b.ToTable("PlanFeatures");
+
+                    b.HasData(
+                        new
+                        {
+                            SubscriptionPlanId = new Guid("c3333333-3333-3333-3333-333333333333"),
+                            FeatureId = new Guid("a1111111-1111-1111-1111-111111111111"),
+                            IsEnabledForPlan = true
+                        },
+                        new
+                        {
+                            SubscriptionPlanId = new Guid("d4444444-4444-4444-4444-444444444444"),
+                            FeatureId = new Guid("a1111111-1111-1111-1111-111111111111"),
+                            IsEnabledForPlan = true
+                        },
+                        new
+                        {
+                            SubscriptionPlanId = new Guid("d4444444-4444-4444-4444-444444444444"),
+                            FeatureId = new Guid("b2222222-2222-2222-2222-222222222222"),
+                            IsEnabledForPlan = true
+                        },
+                        new
+                        {
+                            SubscriptionPlanId = new Guid("e5555555-5555-5555-5555-555555555555"),
+                            FeatureId = new Guid("a1111111-1111-1111-1111-111111111111"),
+                            IsEnabledForPlan = true
+                        },
+                        new
+                        {
+                            SubscriptionPlanId = new Guid("e5555555-5555-5555-5555-555555555555"),
+                            FeatureId = new Guid("b2222222-2222-2222-2222-222222222222"),
+                            IsEnabledForPlan = true
+                        },
+                        new
+                        {
+                            SubscriptionPlanId = new Guid("e5555555-5555-5555-5555-555555555555"),
+                            FeatureId = new Guid("f3333333-3333-3333-3333-333333333333"),
+                            IsEnabledForPlan = true
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.SubscriptionPlan", b =>
@@ -95,17 +199,61 @@ namespace Infra.Migrations
                     b.Property<int>("MaxRequestsPerMinute")
                         .HasColumnType("integer");
 
+                    b.Property<int>("MaxUsers")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PlanName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<int>("PlanTier")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("StorageLimitGb")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.ToTable("SubscriptionPlans");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("c3333333-3333-3333-3333-333333333333"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MaxRequestsPerMinute = 100,
+                            MaxUsers = 1,
+                            PlanName = "Free Start",
+                            PlanTier = 1,
+                            Price = 0m,
+                            StorageLimitGb = 5L
+                        },
+                        new
+                        {
+                            Id = new Guid("d4444444-4444-4444-4444-444444444444"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MaxRequestsPerMinute = 500,
+                            MaxUsers = 10,
+                            PlanName = "Pro Business",
+                            PlanTier = 2,
+                            Price = 50m,
+                            StorageLimitGb = 20L
+                        },
+                        new
+                        {
+                            Id = new Guid("e5555555-5555-5555-5555-555555555555"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MaxRequestsPerMinute = 1000,
+                            MaxUsers = 20,
+                            PlanName = "Enterprise Business",
+                            PlanTier = 3,
+                            Price = 100m,
+                            StorageLimitGb = 50L
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Tenant", b =>
@@ -134,12 +282,43 @@ namespace Infra.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("TenantDomain")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Slug")
                         .IsUnique();
 
+                    b.HasIndex("TenantDomain")
+                        .IsUnique();
+
                     b.ToTable("Tenants");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TenantSubscription", b =>
+                {
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SubscriptionPlanId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("TenantId", "SubscriptionPlanId");
+
+                    b.HasIndex("SubscriptionPlanId");
+
+                    b.ToTable("TenantSubscriptions");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -161,11 +340,6 @@ namespace Infra.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<bool>("IsSystemAdmin")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -191,6 +365,10 @@ namespace Infra.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TenantDomain")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid?>("TenantId")
@@ -350,8 +528,45 @@ namespace Infra.Migrations
                     b.HasOne("Domain.Entities.Tenant", "Tenant")
                         .WithMany("ApiLogs")
                         .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PlanFeature", b =>
+                {
+                    b.HasOne("Domain.Entities.Feature", "FeatureTable")
+                        .WithMany()
+                        .HasForeignKey("FeatureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.SubscriptionPlan", "SubscriptionPlan")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FeatureTable");
+
+                    b.Navigation("SubscriptionPlan");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TenantSubscription", b =>
+                {
+                    b.HasOne("Domain.Entities.SubscriptionPlan", "SubscriptionPlanTable")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubscriptionPlanTable");
 
                     b.Navigation("Tenant");
                 });

@@ -1,9 +1,9 @@
-﻿using Application;
-using Application.Contracts.Auth;
+﻿using Application.Contracts.IRepo;
+using Application.Enums;
 
-using Domain.Entities;
+using Domain.Entities.MasterDB;
 
-using Infra.Persistence;
+using Infra.Persistence.Contexts;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +14,11 @@ public class UserRepository : IUserRepository
 {
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<UserRoles> _roleManager;
-    private readonly ApplicationDbContext _context;
-    public UserRepository(UserManager<User> userManager,RoleManager<UserRoles> roleManager, ApplicationDbContext context)
+    private readonly MasterDbContext _context;
+    public UserRepository(
+        UserManager<User> userManager,
+        RoleManager<UserRoles> roleManager,
+        MasterDbContext context)
     {
         _userManager = userManager;
         _context = context;
@@ -60,11 +63,6 @@ public class UserRepository : IUserRepository
     {
         return await _userManager.GetRolesAsync(user);
     }
-
-    public async Task<Tenant?> GetTenantBySlugAndDomainAsync(string slug, string domain) => await _context.Tenants.FirstOrDefaultAsync(t => t.Slug == slug || t.TenantDomain == domain);
-    public async Task<Tenant?> GetTenantByDomainAsync(string domain) => await _context.Tenants.FirstOrDefaultAsync(t => t.TenantDomain == domain);
-    public async Task AddTenantAsync(Tenant tenant) => await _context.Tenants.AddAsync(tenant);
-
     public async Task<SystemAdminSeedResultEnum> EnsureSystemAdminAsync()
     {
         var existingAdmin = await _userManager.GetUsersInRoleAsync("SystemAdmin");
@@ -78,7 +76,7 @@ public class UserRepository : IUserRepository
             UserName = email,
             Email = email,
         };
-        var result = await CreateUserWithRoleAsync(user, password, "SystemAdmin");
+        await CreateUserWithRoleAsync(user, password, "SystemAdmin");
         int saving = _context.SaveChanges();
         if (saving<0) return SystemAdminSeedResultEnum.Failed;
         return SystemAdminSeedResultEnum.Created;
