@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Identity;
 
-namespace Domain.Entities
+namespace Domain.Entities.MasterDB
 {
     public class User : IdentityUser<Guid>
     {
