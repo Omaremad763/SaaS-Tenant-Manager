@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AdminPanel } from '../pages/admin-panel/admin-panel';
 import { LoginComponent } from '../pages/Auth/login/login';
 import { RegisterUserComponent } from '../pages/Auth/register-user/register-user';
 import { RegisterComponent } from '../pages/Auth/register/register';
@@ -14,7 +15,10 @@ export const routes: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [authGuard],
-    children: [{ path: 'dashboard', component: SubscriptionDashboardComponent }],
+    children: [
+      { path: 'dashboard', component: SubscriptionDashboardComponent },
+      { path: 'AdminPanel', component: AdminPanel },
+    ],
   },
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },

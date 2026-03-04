@@ -29,7 +29,6 @@ public class SubscriptionDashboardController(IMediator mediator) : ControllerBas
     [Route("GetTenantSubscriptionData")]
     public async Task<IActionResult> GetTenantSubscriptionData()
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
         var result = await mediator.Send(new GetAllTenantDataQuery());
         var response = ApiResponse.Success(result);
         return Ok(response);

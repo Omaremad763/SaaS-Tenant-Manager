@@ -11,6 +11,7 @@ public interface IUnitofWork:IDisposable
     public ITenantRepo TenantRepo { get; }
     public IFeatureRepo FeatureRepo { get; }
     public ISubscriptionRepo SubscriptionRepo { get; }
+    public IAPIlogRepo APIlogRepo { get; }
     Task<int> CommitAsync();
 }
 

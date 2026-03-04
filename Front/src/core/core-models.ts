@@ -23,3 +23,21 @@ export interface TenantManagement {
   planName: string;
   features: FeatureStatus[];
 }
+export interface TenantUsage {
+  tenantName: string;
+  requestCount: number;
+}
+
+export interface HourlyTraffic {
+  hour: number;
+  requestCount: number;
+  errorCount: number;
+}
+
+export interface SystemMetrics {
+  totalRequests: number;
+  errorCount: number;
+  avgResponseTime: number;
+  topTenants: TenantUsage[];
+  trafficStats: HourlyTraffic[];
+}
