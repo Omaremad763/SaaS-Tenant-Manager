@@ -33,7 +33,7 @@ public class ToggleFeatureCommandValidator : AbstractValidator<ToggleFeatureComm
 public class SubscriptionQueryHandler(ISaasServices Services) :
     IRequestHandler<GetTenantSubscriptionQuery, SubscriptionPlanDetailsDto>,
     IRequestHandler<ToggleFeatureCommand, bool>,
-   IRequestHandler<GetAllFeaturesQuery, List<string>>,
+   //IRequestHandler<GetAllFeaturesQuery, List<string>>,
    IRequestHandler<GetAllTenantDataQuery, List<TenantManagementDto>>
 
 {
@@ -48,11 +48,11 @@ public class SubscriptionQueryHandler(ISaasServices Services) :
         return await _Services.TenantFeatureService.ToggleFeatureAsync(request.DTO);
 
     }
-    public async Task<List<string>> Handle(GetAllFeaturesQuery request ,CancellationToken cancellationToken)
-    {
-        return  _Services.FeatureService.GetAllFeatures();
+    //public async Task<List<string>> Handle(GetAllFeaturesQuery request ,CancellationToken cancellationToken)
+    //{
+    //    return  _Services.FeatureService.GetAllFeatures();
 
-    }
+    //}
 
     public Task<List<TenantManagementDto>> Handle(GetAllTenantDataQuery request, CancellationToken cancellationToken)
     {

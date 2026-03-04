@@ -8,9 +8,10 @@ using Application.DTOs;
 
 using Domain.Entities.MasterDB;
 
-namespace Application.Contracts.IService;
-public interface IApiLogService
+namespace Application.Contracts.IRepo;
+public interface IAPIlogRepo
 {
-    Task SaveLogAsync(ApiLog log);
     Task<SystemMetricsDto> GetSystemMetricsAsync();
+    Task SaveLogAsync(ApiLog log);
+
 }

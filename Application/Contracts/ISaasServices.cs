@@ -11,6 +11,7 @@ namespace Application.Contracts
         public ITenantSubscriptionService TenantSubscriptionService { get; }
         public ITenantService TenantService { get;}
         public IFeatureService FeatureService {  get; }
+        public IApiLogService ApiLogService {  get; }
 
     }
 }
