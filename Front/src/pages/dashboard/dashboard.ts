@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import Swal from 'sweetalert2';
 import { SubscriptionPlanDetailsDto, TenantManagement } from '../../core/core-models';
-import { SubscriptioDashboard_service } from '../../core/SubscriptioDashboard_service';
+import { SubscritpionDashboard_service } from '../../core/Services/SubscritpionDashboard_service';
 import { AuthService } from '../../shared/shared_services/auth.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { AuthService } from '../../shared/shared_services/auth.service';
   templateUrl: './dashboard.html',
 })
 export class SubscriptionDashboardComponent implements OnInit {
-  private subService = inject(SubscriptioDashboard_service);
+  private subService = inject(SubscritpionDashboard_service);
   private authService = inject(AuthService);
 
   user = this.authService.currentUser;

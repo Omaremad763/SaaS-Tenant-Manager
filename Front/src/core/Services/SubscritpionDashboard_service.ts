@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../src/environment';
-import { ApiResponse } from '../shared/shared_models/api-response.model';
-import { SubscriptionPlanDetailsDto, TenantManagement } from './core-models';
+import { environment } from '../../environment';
+import { ApiResponse } from '../../shared/shared_models/api-response.model';
+import { SubscriptionPlanDetailsDto, TenantManagement } from '../core-models';
 @Injectable({
   providedIn: 'root',
 })
-export class SubscriptioDashboard_service {
+export class SubscritpionDashboard_service {
   private baseUrl = `${environment.apiUrl}/SubscriptionDashboard`;
   private http = inject(HttpClient);
   getTenantSubscriptionByTenantId(
@@ -25,7 +25,6 @@ export class SubscriptioDashboard_service {
       `${this.baseUrl}/GetTenantSubscriptionData`,
     );
   }
-
   toggleFeature(payload: {
     tenantId: string;
     FeatureName: string;

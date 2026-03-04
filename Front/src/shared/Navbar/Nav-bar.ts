@@ -1,25 +1,42 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { Footer } from '../footer/footer';
 import { AuthService } from '../shared_services/auth.service';
 import { MENU_ITEMS } from './NavBarSections';
 
 @Component({
-  selector: 'app-Navbar',
+  selector: 'app-navbar',
   standalone: true,
   templateUrl: './Nav-bar.html',
-  styleUrls: ['./Nav-bar.css'],
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, Footer],
 })
 export class NavBarComponent {
-  menuItems = MENU_ITEMS;
-  router = inject(Router);
-  authService = inject(AuthService);
-  public isDropdownOpen: boolean = false;
-  public toggleDropdown(): void {
-    this.isDropdownOpen = !this.isDropdownOpen;
+  public authService = inject(AuthService);
+  private router = inject(Router);
+
+  isDropdownOpen = signal(false);
+
+  filteredMenuItems = computed(() => {
+    const userRoles = this.authService.currentUser()?.roles || [];
+
+    return MENU_ITEMS.filter((item) => {
+      if (!item.roles || item.roles.length === 0) return true;
+
+      return item.roles.some((role) => userRoles.includes(role));
+    });
+  });
+
+  toggleDropdown(): void {
+    this.isDropdownOpen.update((v) => !v);
   }
+
   logout() {
     this.authService.logout();
+    this.isDropdownOpen.set(false);
+  }
+
+  closeDropdown() {
+    this.isDropdownOpen.set(false);
   }
 }

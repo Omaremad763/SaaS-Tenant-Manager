@@ -1,12 +1,13 @@
-<div *ngIf="loadingService.loading$ | async" 
-     class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm">
-  
+<div
+  *ngIf="loadingService.loading$ | async"
+  class="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-slate-900/40 backdrop-blur-sm"
+>
   <div class="relative h-16 w-16">
     <div class="absolute inset-0 rounded-full border-4 border-solid border-primary-500/20"></div>
-    <div class="absolute inset-0 animate-spin rounded-full border-4 border-solid border-primary-500 border-t-transparent"></div>
+    <div
+      class="absolute inset-0 animate-spin rounded-full border-4 border-solid border-primary-500 border-t-transparent"
+    ></div>
   </div>
-  
-  <p class="mt-4 font-medium text-white tracking-wider animate-pulse">
-    Loading Invento...
-  </p>
+
+  <p class="mt-4 font-medium text-white tracking-wider animate-pulse">Loading...</p>
 </div>
