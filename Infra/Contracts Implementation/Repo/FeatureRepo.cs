@@ -20,4 +20,8 @@ public class FeatureRepo(MasterDbContext context) : IFeatureRepo
     {
         return await context.Features.FirstOrDefaultAsync(f => f.FeatureName == featureName);
     }
+    public List<string> GetAllFeatures()
+    {
+        return context.Features.Select(x => x.FeatureName).ToList();
+    }
 }
