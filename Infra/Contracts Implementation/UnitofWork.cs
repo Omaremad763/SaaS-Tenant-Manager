@@ -25,6 +25,7 @@ namespace Infrastructure.Contracts_Implementation
         public ISubscriptionRepo SubscriptionRepo =>  new SubscriptionRepo(context);
 
         public IFeatureRepo FeatureRepo => new FeatureRepo(context);
+        public IAPIlogRepo APIlogRepo => new APIlogRepo(context);
 
         public async Task<int> CommitAsync()
         {
