@@ -1,16 +1,25 @@
-export interface TenantRegistrationDto {
-  name: string;
-  slug: string;
-  planId: string;
-  password: string;
-  email: string;
-  tenantDomain?: string | null;
+export interface SubscriptionPlanDetailsDto {
+  planName: string;
+  price: number;
+  maxRequestsPerMinute: number;
+  maxUsers: number;
+  endDate: string;
+  isActive: boolean;
 }
-export interface TenantUserRegistraionDto {
-  email: string;
-  password: string;
+export interface ToggleFeatureAccessDTO {
+  tenantId: string;
+  featureName: string;
+  isEnabled: boolean;
 }
-export interface LoginDto {
-  email: string;
-  password: string;
+export interface FeatureStatus {
+  featureId: number;
+  featureName: string;
+  isInPlan: boolean;
+  isCurrentlyEnabled: boolean;
+}
+
+export interface TenantManagement {
+  tenantName: string;
+  planName: string;
+  features: FeatureStatus[];
 }
