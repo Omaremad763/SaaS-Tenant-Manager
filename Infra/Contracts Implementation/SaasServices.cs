@@ -26,5 +26,7 @@ namespace Infrastructure.Contracts_Implementation;
     public ITenantFeatureService TenantFeatureService => new TenantFeatureService( unitofWork);
     public ITenantSubscriptionService TenantSubscriptionService => new TenantSubscriptionService(unitofWork,mapper);
     public ITenantService TenantService => new TenantService(unitofWork);
+    public IFeatureService FeatureServcie => new FeatureServcie(unitofWork);
+    public IFeatureService FeatureService =>  new FeatureServcie(unitofWork);
 }
 

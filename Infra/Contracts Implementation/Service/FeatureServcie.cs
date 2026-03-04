@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using Application.Contracts;
+using Application.Contracts.IService;
+
+namespace Infra.Contracts_Implementation.Service;
+public class FeatureServcie(IUnitofWork unitofWork): IFeatureService
+{
+    List<string> IFeatureService.GetAllFeatures()
+    {
+        return unitofWork.FeatureRepo.GetAllFeatures();
+    }
+}

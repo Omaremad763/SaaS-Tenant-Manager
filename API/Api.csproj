@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Infra\Infra.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="SonarAnalyzer.CSharp" Version="10.20.0.135146" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,8 @@
-﻿using ApilogsServiceImp;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+using ApilogsServiceImp;
 
 using Application;
 using Application.Contracts;
@@ -15,15 +19,21 @@ using Infra.Persistence.Contexts;
 
 using Infrastructure.Contracts_Implementation;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 namespace Infra.Extentions;
 
 public static class DependenciesCollector
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
+        var issuer = Environment.GetEnvironmentVariable("SaasJWTIssuer");
+        var audience = Environment.GetEnvironmentVariable("SaasJWTAudience");
+        var jwtKey = Environment.GetEnvironmentVariable("SaasJwtKey");
         var assembly = typeof(IApplicationHandlerMarker).Assembly;
         var DatabaseConfig = Environment.GetEnvironmentVariable("SaasDatabaseConfig");
         services.AddDbContext<MasterDbContext>
@@ -64,8 +74,34 @@ public static class DependenciesCollector
             options.UseNpgsqlConnection(DatabaseConfig);
         }));
             services.AddHangfireServer();
-            #endregion
+        #endregion
+
+        #region Auth
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+                    .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,        
+                    ValidAudience = audience,             
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                    RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+                    NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+                };
+            });
+        services.AddAuthorization(); 
+        #endregion
 
         return services;
     }
 }
+

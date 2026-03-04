@@ -13,8 +13,8 @@ public class SubscriptionPlan : BaseEntity
     public int MaxRequestsPerMinute { get; set; } 
     public int MaxUsers { get; set; }      
     public long StorageLimitGb { get; set; }
-    public ICollection<PlanFeature> PlanFeatures { get; set; } = [];
-    public ICollection<TenantSubscription> TenantSubscriptionTable { get; set; } = [];
+    public ICollection<PlanFeature> PlanFeatures { get;} = [];
+    public ICollection<TenantSubscription> TenantSubscriptionTable { get;} = [];
 
 }
 

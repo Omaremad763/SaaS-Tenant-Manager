@@ -10,4 +10,5 @@ namespace Application.Contracts.IRepo;
 public interface IFeatureRepo
 {
     Task<Feature?> GetFeatureByNameAsync(string featureName);
+    List<string> GetAllFeatures();
 }

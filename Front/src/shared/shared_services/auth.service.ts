@@ -10,7 +10,7 @@ export interface UserState {
   userId: string;
   username: string;
   roles: string[];
-  tenantId: string; // إضافة الـ TenantId هنا مهمة جداً
+  tenantId: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -33,8 +33,6 @@ export class AuthService {
       this.currentUser.set(JSON.parse(storedUser));
     }
   }
-
-  // تعديل: الـ Data هنا هي الـ Token مباشرة (string)
   login(data: AuthDtos.LoginDto): Observable<string> {
     return this.http.post<ApiResponse<string>>(`${this.baseUrl}/Login`, data).pipe(
       tap((response) => {
