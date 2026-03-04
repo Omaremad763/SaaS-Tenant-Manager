@@ -37,8 +37,10 @@ public class ApiLogMiddleware(RequestDelegate next, IBackgroundJobClient backgro
             watch.Stop();
 
             Guid? tenantId = null;
-            if (context.Items.TryGetValue("TenantId", out var rawId) && Guid.TryParse(rawId?.ToString(), out var parsedId))
+            if (context.Request.Query.TryGetValue("TenantId", out var rawId)  && Guid.TryParse(rawId, out var parsedId))
+            {
                 tenantId = parsedId;
+            }
 
             var log = new ApiLog
             {

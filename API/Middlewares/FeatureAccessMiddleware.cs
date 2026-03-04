@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 
 using Application.Contracts;
-
+namespace SaaS_Tenant_Manager.Middlewares;
 public class FeatureAccessMiddleware(RequestDelegate _next)
 {
     public async Task InvokeAsync(HttpContext context)
@@ -13,7 +13,7 @@ public class FeatureAccessMiddleware(RequestDelegate _next)
             var featureName = pathSegments[2];
             var tenantIdClaim = context.User.FindFirstValue("TenantId");
 
-            if (Guid.TryParse(tenantIdClaim, out Guid id))
+            if (Guid.TryParse(tenantIdClaim, out var id))
             {
                 var services = context.RequestServices.GetRequiredService<ISaasServices>();
 
@@ -21,7 +21,7 @@ public class FeatureAccessMiddleware(RequestDelegate _next)
 
                 var access = await services.TenantFeatureService.CheckTenantAccesedFeatures(id, featureName, ct);
 
-                if (access == null || !access.IsEnabled)
+                if (access == null || !access.IsCurrentlyEnabled)
                 {
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
                     await context.Response.WriteAsJsonAsync(new
