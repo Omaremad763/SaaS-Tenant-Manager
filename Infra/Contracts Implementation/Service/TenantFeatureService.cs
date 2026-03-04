@@ -37,10 +37,10 @@ public class TenantFeatureService(IUnitofWork unitOfWork) : ITenantFeatureServic
     }
     public async Task<FeatureStatusDto?> CheckTenantAccesedFeatures(Guid tenantId, string featureCode, CancellationToken ct)
     {
-        var dto = new FeatureStatusDto(null, false);
+        var dto = new FeatureStatusDto(Guid.Empty, null,false,false);
         var feature = await unitOfWork.TenantFeatureRepo.GetAccessedFeatures(tenantId, featureCode);
         if (feature == null) return dto;
-        dto = new FeatureStatusDto(feature.FeatureTable.FeatureName, true);
+        dto = new FeatureStatusDto(feature.FeatureTable.Id,feature.FeatureTable.FeatureName, true,true);
         return dto;
     }
 }

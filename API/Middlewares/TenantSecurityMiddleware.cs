@@ -1,12 +1,10 @@
 ﻿using System.Security.Claims;
 
 using Application.Contracts;
-
-public class TenantSecurityMiddleware
+namespace SaaS_Tenant_Manager.Middlewares;
+public class TenantSecurityMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public TenantSecurityMiddleware(RequestDelegate next) => _next = next;
+    private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext context, ISaasServices services)
     {

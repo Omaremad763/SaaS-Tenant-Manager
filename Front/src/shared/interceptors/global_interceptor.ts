@@ -16,15 +16,14 @@ export const appInterceptor: HttpInterceptorFn = (req, next) => {
 
   loadingService.show();
   const token = authService.getToken();
-  const currentUser = authService.currentUser(); // Signal
+  const currentUser = authService.currentUser();
 
-  // كولون للـ Request وإضافة الـ Token والـ TenantId
   let authReq = req;
   if (token) {
     authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
-        'X-Tenant-Id': currentUser?.tenantId || '', // إضافة الـ TenantId في الهيدر (اختياري بس احترافي)
+        'X-Tenant-Id': currentUser?.tenantId || '',
       },
     });
   }
@@ -33,10 +32,10 @@ export const appInterceptor: HttpInterceptorFn = (req, next) => {
     map((event) => {
       if (event instanceof HttpResponse) {
         const body = event.body as ApiResponse<any>;
-        // لو الـ API رجع success: false بس الـ Status 200
+
         if (body && body.hasOwnProperty('success') && !body.success) {
           const msg = body.errors?.join(', ') || 'Operation failed';
-          throw { status: 400, message: msg }; // ارمي Object يلقطه الـ catchError
+          throw { status: 400, message: msg };
         }
       }
       return event;
@@ -49,7 +48,6 @@ export const appInterceptor: HttpInterceptorFn = (req, next) => {
       } else if (error.status === 401) {
         handleUnauthorized(authService, router);
       } else {
-        // لو الخطأ جاي من الـ map اللي فوق أو من السيرفر
         errorMessage = error.message || error.error?.errors?.join(', ') || 'Server Error';
         notification.showError(errorMessage);
       }

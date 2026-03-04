@@ -13,8 +13,8 @@ public class Tenant : BaseEntity
     public bool IsActive { get; set; } = true;
     public string TenantDomain { get; set; } = string.Empty;
     public ICollection<TenantFeature> TenantFeatures { get; set; } = [];
-    public ICollection<ApiLog> ApiLogs { get; set; } = [];
-    public TenantSubscription? TenantSubscriptionTable { get; set; }
+    public ICollection<ApiLog> ApiLogs { get; } = [];
+    public TenantSubscription? TenantSubscriptionTable { get; }
 
 }
 

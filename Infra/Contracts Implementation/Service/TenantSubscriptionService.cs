@@ -15,9 +15,8 @@ public class TenantSubscriptionService(IUnitofWork unitofWork , IMapper mapper) 
 {
     public async Task<SubscriptionPlanDetailsDto?> GetTenantSubscriptionAsync(Guid tenantId, CancellationToken ct)
     {
-        var subscription = await unitofWork.TenantSubscriptionRepo.GetTenantSubscriptionAsync(tenantId, ct);
-        if (subscription == null) throw new Exception("No active subscription found for this tenant.");
-        var mapping = mapper.Map<SubscriptionPlanDetailsDto>(subscription);
+        var subscription = await unitofWork.TenantSubscriptionRepo.GetTenantSubscriptionAsync(tenantId, ct) ?? throw new Exception("No active subscription found for this tenant.");
+        SubscriptionPlanDetailsDto? mapping = mapper.Map<SubscriptionPlanDetailsDto>(subscription);
         return mapping;
     }
 }

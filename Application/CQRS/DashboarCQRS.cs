@@ -10,6 +10,8 @@ namespace Application.CQRS;
 //Queries
 public record GetTenantSubscriptionQuery(Guid TenantId) : IRequest<SubscriptionPlanDetailsDto>;
 public record ToggleFeatureCommand(ToggleFeatureAccessDTO DTO) : IRequest<bool>;
+public record GetAllFeaturesQuery(): IRequest<List<string>>;
+public record GetAllTenantDataQuery(): IRequest<List<TenantManagementDto>>;
 
 //validators
 public class GetTenantSubscriptionValidator : AbstractValidator<GetTenantSubscriptionQuery>
@@ -28,16 +30,14 @@ public class ToggleFeatureCommandValidator : AbstractValidator<ToggleFeatureComm
     }
 }
 //handler
-public class SubscriptionQueryHandler :
+public class SubscriptionQueryHandler(ISaasServices Services) :
     IRequestHandler<GetTenantSubscriptionQuery, SubscriptionPlanDetailsDto>,
-    IRequestHandler<ToggleFeatureCommand, bool>
-{
-    private readonly ISaasServices _Services;
+    IRequestHandler<ToggleFeatureCommand, bool>,
+   //IRequestHandler<GetAllFeaturesQuery, List<string>>,
+   IRequestHandler<GetAllTenantDataQuery, List<TenantManagementDto>>
 
-    public SubscriptionQueryHandler(ISaasServices Services)
-    {
-        _Services = Services;
-    }
+{
+    private readonly ISaasServices _Services = Services;
 
     public async Task<SubscriptionPlanDetailsDto> Handle(GetTenantSubscriptionQuery request, CancellationToken cancellationToken)
     {
@@ -47,6 +47,16 @@ public class SubscriptionQueryHandler :
     {
         return await _Services.TenantFeatureService.ToggleFeatureAsync(request.DTO);
 
+    }
+    //public async Task<List<string>> Handle(GetAllFeaturesQuery request ,CancellationToken cancellationToken)
+    //{
+    //    return  _Services.FeatureService.GetAllFeatures();
+
+    //}
+
+    public Task<List<TenantManagementDto>> Handle(GetAllTenantDataQuery request, CancellationToken cancellationToken)
+    {
+        return _Services.TenantService.GetAllTenantsManagementAsync();
     }
 }
 

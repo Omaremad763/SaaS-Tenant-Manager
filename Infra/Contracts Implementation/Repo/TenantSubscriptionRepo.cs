@@ -26,7 +26,6 @@ public class TenantSubscriptionRepo(MasterDbContext context): ITenantSubscriptio
             .Include(s => s.SubscriptionPlanTable)
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.TenantId == tenantId && s.IsActive, cancellationToken);
-
     }
 
 }

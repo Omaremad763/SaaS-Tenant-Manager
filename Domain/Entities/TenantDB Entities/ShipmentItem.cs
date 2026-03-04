@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities.TenantDB_Entities;
+namespace Domain.Entities.TenantDBEntities;
 public class ShipmentItem
 {
     public Guid Id { get; set; }

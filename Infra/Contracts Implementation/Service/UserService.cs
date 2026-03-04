@@ -27,11 +27,11 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
     private static string GenerateJwt(User user, IList<string> roles)
     {
         var claims = new List<Claim>
-    {
+        {
         new(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new (ClaimTypes.Email, user.Email!),
         new ("TenantId", user.TenantId?.ToString() ?? string.Empty)
-    };
+         };
 
         foreach (var role in roles)
         {
@@ -68,18 +68,19 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
     }
     public async Task<ProvisioningStatusDto> RegisterTenantAdmin(TenantRegistrationDto dto)
     {
-        var domainFromEmail = dto.Email.Split('@')[1];
+        var domainFromEmail = dto.Email.Split('@')[1].ToLower();
         var tenant = await unitofwork.TenantRepo.GetTenantBySlugAndDomainAsync(dto.Slug, domainFromEmail);
         if (tenant != null) return new ProvisioningStatusDto(null, "Failed", "Tenant already exists");
         var dtoWithDomain = dto with { TenantDomain = domainFromEmail };
         var addTenant = await AddTenantAsync(dtoWithDomain);
-        var defaultPlanEnum = (int)PlanTier.Free;
-        var defaultPlanId= await unitofwork.SubscriptionRepo.GetPlanByIdAsync(defaultPlanEnum);
+        var PlanEnum = dto.PlanId;
+        var defaultPlanId= await unitofwork.SubscriptionRepo.GetPlanByIdAsync(PlanEnum);
         var subscription = new TenantSubscription
         {
             TenantId = addTenant.Id,
             SubscriptionPlanId = Guid.Parse(defaultPlanId.Id.ToString()),
             StartDate = DateTime.UtcNow,
+            EndDate=DateTime.UtcNow.AddYears(1)
         };
         await unitofwork.TenantSubscriptionRepo.AddTenantSubscriptionAsync(subscription);
         var planFeatures = await unitofwork.PlanFeatureRepo.GetFeaturesByPlanIdAsync(defaultPlanId.Id);
@@ -108,7 +109,7 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
     }
     public async Task<string> RegisterTenantUser(TenantUserRegistraionDto dto)
     {
-        var domainFromEmail = dto.Email.Split('@')[1];
+        var domainFromEmail = dto.Email.Split('@')[1].ToLower();
         var tenant = await unitofwork.TenantRepo.GetTenantByDomainAsync(domainFromEmail);
         if (tenant == null) return "Your company domain is not registered in our system.";
         var existingUser = await unitofwork.UserRepository.FindByEmailAsync(dto.Email);

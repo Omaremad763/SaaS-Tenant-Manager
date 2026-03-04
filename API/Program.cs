@@ -50,7 +50,7 @@ app.UseMiddleware<FeatureAccessMiddleware>();
 app.UseMiddleware<ApiLogMiddleware>();
 app.UseHangfireDashboard("/HangfireSass", new DashboardOptions
 {
-    Authorization = new[] { new HangfireAdminFilter() },
+    Authorization = [new HangfireAdminFilter()],
     DashboardTitle = "SaaS Manager - Background Jobs"
 });
 app.MapControllers();

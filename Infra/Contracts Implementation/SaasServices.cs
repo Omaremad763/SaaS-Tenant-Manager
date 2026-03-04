@@ -1,4 +1,6 @@
-﻿using Application.Contracts;
+﻿using ApilogsServiceImp;
+
+using Application.Contracts;
 using Application.Contracts.IService;
 
 using AutoMapper;
@@ -6,9 +8,11 @@ using AutoMapper;
 using Infra.Contracts_Implementation.Entites_Contracts.TenantFeatures;
 using Infra.Contracts_Implementation.RegistrionPage;
 using Infra.Contracts_Implementation.Service;
+using Infra.Persistence.Contexts;
 
 using MediatR;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 using User_service_Imp;
@@ -26,5 +30,7 @@ namespace Infrastructure.Contracts_Implementation;
     public ITenantFeatureService TenantFeatureService => new TenantFeatureService( unitofWork);
     public ITenantSubscriptionService TenantSubscriptionService => new TenantSubscriptionService(unitofWork,mapper);
     public ITenantService TenantService => new TenantService(unitofWork);
+    public IApiLogService ApiLogService =>  new ApiLogService( unitofWork);
+    public IFeatureService FeatureService => new FeatureServcie(unitofWork);
 }
 

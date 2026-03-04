@@ -8,16 +8,10 @@ using Application.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
-public class UsageTrackingMiddleware
+public class UsageTrackingMiddleware(RequestDelegate next, IMemoryCache cache)
 {
-    private readonly RequestDelegate _next;
-    private readonly IMemoryCache _cache;
-
-    public UsageTrackingMiddleware(RequestDelegate next, IMemoryCache cache)
-    {
-        _next = next;
-        _cache = cache;
-    }
+    private readonly RequestDelegate _next = next;
+    private readonly IMemoryCache _cache = cache;
 
     public async Task InvokeAsync(HttpContext context, ISaasServices services, CancellationToken cancellationToken)
     {
@@ -36,7 +30,7 @@ public class UsageTrackingMiddleware
                 var cacheKey = $"RateLimit_{userTenantId}";
                 var requestCount = _cache.Get<int?>(cacheKey) ?? 0;
 
-                if (requestCount >= planInfo.MonthlyRequestLimit)
+                if (requestCount >= planInfo.MaxRequestsPerMinute)
                 {
                     context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
                     await context.Response.WriteAsJsonAsync(new
