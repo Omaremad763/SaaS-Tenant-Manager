@@ -15,32 +15,38 @@ using FluentValidation;
 using Hangfire;
 using Hangfire.PostgreSql;
 
+using IdGen;
+
 using Infra.Persistence.Contexts;
 
 using Infrastructure.Contracts_Implementation;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 namespace Infra.Extentions;
-
 public static class DependenciesCollector
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
+        var generator = new IdGenerator(0);        
         var issuer = Environment.GetEnvironmentVariable("SaasJWTIssuer");
         var audience = Environment.GetEnvironmentVariable("SaasJWTAudience");
         var jwtKey = Environment.GetEnvironmentVariable("SaasJwtKey");
         var assembly = typeof(IApplicationHandlerMarker).Assembly;
         var DatabaseConfig = Environment.GetEnvironmentVariable("SaasDatabaseConfig");
+        services.AddHttpContextAccessor();
         services.AddDbContext<MasterDbContext>
          (options =>
          {
              options.UseNpgsql(DatabaseConfig);
          });
+        services.AddDbContext<TenantDbContext>();
+        services.AddDbContext<TenantDbContext>();
         services.AddScoped<ISaasServices, SaasServices>();
         services.AddScoped<IApiLogService, ApiLogService>();
         services.AddScoped<IUnitofWork, UnitofWork>();
@@ -63,6 +69,7 @@ public static class DependenciesCollector
         })
         .AddEntityFrameworkStores<MasterDbContext>()
         .AddDefaultTokenProviders();
+        services.AddSingleton<IIdGenerator<long>>(generator);
         #region Hangifre
 
         services.AddHangfire(config => config

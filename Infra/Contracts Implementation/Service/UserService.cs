@@ -68,19 +68,21 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
     }
     public async Task<ProvisioningStatusDto> RegisterTenantAdmin(TenantRegistrationDto dto)
     {
+        var ResponseDTO = new ProvisioningStatusDto(null, "Failed", "Try Again Later");
+
         var domainFromEmail = dto.Email.Split('@')[1].ToLower();
         var tenant = await unitofwork.TenantRepo.GetTenantBySlugAndDomainAsync(dto.Slug, domainFromEmail);
         if (tenant != null) return new ProvisioningStatusDto(null, "Failed", "Tenant already exists");
         var dtoWithDomain = dto with { TenantDomain = domainFromEmail };
         var addTenant = await AddTenantAsync(dtoWithDomain);
         var PlanEnum = dto.PlanId;
-        var defaultPlanId= await unitofwork.SubscriptionRepo.GetPlanByIdAsync(PlanEnum);
+        var defaultPlanId = await unitofwork.SubscriptionRepo.GetPlanByIdAsync(PlanEnum);
         var subscription = new TenantSubscription
         {
             TenantId = addTenant.Id,
             SubscriptionPlanId = Guid.Parse(defaultPlanId.Id.ToString()),
             StartDate = DateTime.UtcNow,
-            EndDate=DateTime.UtcNow.AddYears(1)
+            EndDate = DateTime.UtcNow.AddYears(1)
         };
         await unitofwork.TenantSubscriptionRepo.AddTenantSubscriptionAsync(subscription);
         var planFeatures = await unitofwork.PlanFeatureRepo.GetFeaturesByPlanIdAsync(defaultPlanId.Id);
@@ -95,17 +97,29 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
             }).ToList();
             await unitofwork.TenantFeatureRepo.AddRangeTenantFeaturAsync(tenantFeatures);
         }
-            var user = new User
+        var user = new User { UserName = dto.Email, Email = dto.Email, TenantId = addTenant.Id, TenantDomain = domainFromEmail };
+
+        //Transcation begin
+        using var transaction = await unitofwork.BeginTransactionAsync();
+ try { 
+        var Register = await unitofwork.UserRepository.CreateUserWithRoleAsync(user, dto.Password, "TenantAdmin");
+        if (Register.Errors.Any())
+        {
+            var errorMessages = string.Join(", ", Register.Errors.Select(e => e.Description));
+            return ResponseDTO with
             {
-                UserName = dto.Email,
-                Email = dto.Email,
-                TenantId = addTenant.Id,
-                TenantDomain = domainFromEmail
+                TenantId = null,
+                Status = "failed",
+                Message = $"Registration failed: {errorMessages}"
             };
+        }
             await _mediator.Publish(new TenantCreatedEvent(addTenant.Id, addTenant.ConnectionString));
-            await unitofwork.UserRepository.CreateUserWithRoleAsync(user, dto.Password, "TenantAdmin");
-            await unitofwork.CommitAsync();
-             return new ProvisioningStatusDto(addTenant.Id, "In Progress", "Database Proverisiong Started"); ;
+      }
+        catch (Exception ex){ await transaction.RollbackAsync(); return ResponseDTO; }
+
+        await transaction.CommitAsync();
+        await unitofwork.CommitAsync();
+        return new ProvisioningStatusDto(addTenant.Id, "In Progress", "Database Proverisiong Started"); ;
     }
     public async Task<string> RegisterTenantUser(TenantUserRegistraionDto dto)
     {
