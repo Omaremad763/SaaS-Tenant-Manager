@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infra.Migrations.TenantMigrations
 {
     [DbContext(typeof(TenantDbContext))]
-    [Migration("20260228185952_InitialTenantSchema")]
+    [Migration("20260306225108_InitialTenantSchema")]
     partial class InitialTenantSchema
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Infra.Migrations.TenantMigrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entities.TenantDB_Entities.Client", b =>
+            modelBuilder.Entity("Domain.Entities.TenantDBEntities.Client", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace Infra.Migrations.TenantMigrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TenantDB_Entities.Shipment", b =>
+            modelBuilder.Entity("Domain.Entities.TenantDBEntities.Shipment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,15 +64,12 @@ namespace Infra.Migrations.TenantMigrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeliveryAddress")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ReceiverName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ReceiverPhone")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("ShippingFees")
@@ -84,9 +81,8 @@ namespace Infra.Migrations.TenantMigrations
                     b.Property<decimal>("TotalWeight")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("TrackingNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long>("Trackingnumber")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -95,7 +91,7 @@ namespace Infra.Migrations.TenantMigrations
                     b.ToTable("Shipments");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TenantDB_Entities.ShipmentItem", b =>
+            modelBuilder.Entity("Domain.Entities.TenantDBEntities.ShipmentItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,9 +117,9 @@ namespace Infra.Migrations.TenantMigrations
                     b.ToTable("ShipmentItems");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TenantDB_Entities.Shipment", b =>
+            modelBuilder.Entity("Domain.Entities.TenantDBEntities.Shipment", b =>
                 {
-                    b.HasOne("Domain.Entities.TenantDB_Entities.Client", "Client")
+                    b.HasOne("Domain.Entities.TenantDBEntities.Client", "Client")
                         .WithMany("Shipments")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -132,9 +128,9 @@ namespace Infra.Migrations.TenantMigrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TenantDB_Entities.ShipmentItem", b =>
+            modelBuilder.Entity("Domain.Entities.TenantDBEntities.ShipmentItem", b =>
                 {
-                    b.HasOne("Domain.Entities.TenantDB_Entities.Shipment", "Shipment")
+                    b.HasOne("Domain.Entities.TenantDBEntities.Shipment", "Shipment")
                         .WithMany("Items")
                         .HasForeignKey("ShipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -143,12 +139,12 @@ namespace Infra.Migrations.TenantMigrations
                     b.Navigation("Shipment");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TenantDB_Entities.Client", b =>
+            modelBuilder.Entity("Domain.Entities.TenantDBEntities.Client", b =>
                 {
                     b.Navigation("Shipments");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TenantDB_Entities.Shipment", b =>
+            modelBuilder.Entity("Domain.Entities.TenantDBEntities.Shipment", b =>
                 {
                     b.Navigation("Items");
                 });

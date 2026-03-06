@@ -1,5 +1,7 @@
 ﻿using Application.Contracts.IService;
 
+using AutoMapper;
+
 namespace Application.Contracts
 {
     public interface ISaasServices
@@ -12,6 +14,8 @@ namespace Application.Contracts
         public ITenantService TenantService { get;}
         public IFeatureService FeatureService {  get; }
         public IApiLogService ApiLogService {  get; }
+        public IShipmentService ShipmentService {  get; }
+        public IClientService ClientService {  get; }
 
     }
 }

@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environment';
 import { ApiResponse } from '../../shared/shared_models/api-response.model';
-import { SubscriptionPlanDetailsDto, TenantManagement } from '../core-models';
+import { ClientStatsDto, SubscriptionPlanDetailsDto, TenantManagement } from '../core-models';
 @Injectable({
   providedIn: 'root',
 })
@@ -17,9 +17,6 @@ export class SubscritpionDashboard_service {
       `${this.baseUrl}/GetTenantSubscriptionByTenantId?TenantId=${tenantId}`,
     );
   }
-  getAllFeatures(): Observable<ApiResponse<string[]>> {
-    return this.http.get<ApiResponse<string[]>>(`${this.baseUrl}/GetFeatures`);
-  }
   GetTenantSubscriptionData(): Observable<ApiResponse<TenantManagement[]>> {
     return this.http.get<ApiResponse<TenantManagement[]>>(
       `${this.baseUrl}/GetTenantSubscriptionData`,
@@ -31,5 +28,8 @@ export class SubscritpionDashboard_service {
     isEnabled: boolean;
   }): Observable<ApiResponse<boolean>> {
     return this.http.patch<ApiResponse<boolean>>(`${this.baseUrl}/toggleFeature`, payload);
+  }
+  getClientStatistics(): Observable<ApiResponse<ClientStatsDto>> {
+    return this.http.get<ApiResponse<ClientStatsDto>>(`${this.baseUrl}/GetClientStatistics`);
   }
 }

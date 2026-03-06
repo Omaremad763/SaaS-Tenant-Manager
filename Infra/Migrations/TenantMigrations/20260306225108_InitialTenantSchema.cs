@@ -31,15 +31,15 @@ namespace Infra.Migrations.TenantMigrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TrackingNumber = table.Column<string>(type: "text", nullable: false),
-                    ReceiverName = table.Column<string>(type: "text", nullable: false),
-                    ReceiverPhone = table.Column<string>(type: "text", nullable: false),
-                    DeliveryAddress = table.Column<string>(type: "text", nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
-                    TotalWeight = table.Column<decimal>(type: "numeric", nullable: false),
-                    ShippingFees = table.Column<decimal>(type: "numeric", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ClientId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Trackingnumber = table.Column<long>(type: "bigint", nullable: false),
+                    ReceiverName = table.Column<string>(type: "text", nullable: true),
+                    ReceiverPhone = table.Column<string>(type: "text", nullable: true),
+                    DeliveryAddress = table.Column<string>(type: "text", nullable: true),
+                    TotalWeight = table.Column<decimal>(type: "numeric", nullable: false),
+                    ShippingFees = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -42,7 +42,16 @@ public class SubscriptionDashboardController(IMediator mediator) : ControllerBas
         var response = ApiResponse.Success(result);
         return Ok(response);
     }
-    
+    [HttpGet]
+    [Authorize(Roles = "TenantAdmin")]
+    [Route("GetClientStatistics")]
+    public async Task<IActionResult> GetClientStatistics()
+    {
+        var result = await mediator.Send(new GetClientStatisticsQuery());
+        var response = ApiResponse.Success(result);
+
+        return Ok(response);
+    }
 }
 
 

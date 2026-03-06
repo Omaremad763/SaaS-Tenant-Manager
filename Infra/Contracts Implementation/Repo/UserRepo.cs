@@ -10,20 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Contracts_Implementation.Auth_Page;
 
-public class UserRepository : IUserRepository
+public class UserRepository(
+    UserManager<User> userManager,
+    RoleManager<UserRoles> roleManager,
+    MasterDbContext context) : IUserRepository
 {
-    private readonly UserManager<User> _userManager;
-    private readonly RoleManager<UserRoles> _roleManager;
-    private readonly MasterDbContext _context;
-    public UserRepository(
-        UserManager<User> userManager,
-        RoleManager<UserRoles> roleManager,
-        MasterDbContext context)
-    {
-        _userManager = userManager;
-        _context = context;
-        _roleManager = roleManager;
-    }
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly RoleManager<UserRoles> _roleManager = roleManager;
+    private readonly MasterDbContext _context = context;
 
     public async Task<IdentityResult> CreateUserWithRoleAsync(User user, string password, string roleName)
     {

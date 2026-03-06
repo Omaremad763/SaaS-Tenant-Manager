@@ -1,7 +1,7 @@
 export interface TenantRegistrationDto {
   name: string;
   slug: string;
-  planId: string;
+  planId: number;
   password: string;
   email: string;
   tenantDomain?: string | null;
