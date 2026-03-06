@@ -10,7 +10,7 @@ namespace Domain.Entities.MasterDB
 {
     public class User : IdentityUser<Guid>
     {
-        public string TenantDomain { get; set; }
+        public string TenantDomain { get; set; }=string.Empty;
 
         public Guid? TenantId { get; set; }
 

@@ -12,6 +12,6 @@ public class TenantFeature
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAT { get; set; }
     public bool IsEnabled { get; set; } = true;
-    public Tenant TenantTable { get; set; }
+    public Tenant TenantTable { get; }
     public Feature FeatureTable { get; set; }
 }
