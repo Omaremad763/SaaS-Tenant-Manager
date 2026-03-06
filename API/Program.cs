@@ -11,7 +11,11 @@ using SaaS_Tenant_Manager.Middlewares;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddServices();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 builder.Services.AddOpenApi();
 builder.Services.AddCors(options =>
 {
@@ -34,7 +38,6 @@ using (var scope = app.Services.CreateScope())
     var created = await saasServices.UserService.EnsureSystemAdminAsync();
         Console.WriteLine(created);
 }
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
