@@ -24,11 +24,10 @@ export class RegisterComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
 
-  // تحديث الـ Form عشان يطابق الـ DTO بتاع الـ RegisterTenant
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     slug: ['', [Validators.required]],
-    planId: ['basic-plan', Validators.required], // قيمة افتراضية
+    planId: [1],
     email: ['', [Validators.required, Validators.email, this.corporateEmailValidator]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
@@ -41,18 +40,44 @@ export class RegisterComponent {
     const formData = this.form.getRawValue() as AuthDtos.TenantRegistrationDto;
     this.auth.registerTenant(formData).subscribe({
       next: (res) => {
+        if (!res?.tenantId) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Registraion Error',
+            text: res.message,
+            confirmButtonColor: '#d33',
+          });
+          return;
+        }
+
         Swal.fire({
-          title: 'Tenant Created!',
-          text: 'Your workspace is being provisioned. Please login to continue.',
+          title: 'Registration Successful!',
+          text:
+            res.message || 'Your workspace is being provisioned. You will be redirected to login.',
           icon: 'success',
           confirmButtonColor: '#4F46E5',
           confirmButtonText: 'Go to Login',
-        }).then(() => {
-          this.router.navigate(['/login']);
+          allowOutsideClick: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.router.navigate(['/login']);
+          }
         });
       },
       error: (err) => {
-        console.error('Registration error:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Registration Failed',
+          text:
+            err.error?.message ||
+            'An unexpected error occurred. Please verify your inputs and try again.',
+          confirmButtonText: 'Understood',
+          confirmButtonColor: '#d33',
+          timer: 5000,
+          showClass: {
+            popup: 'animate__animated animate__fadeInDown',
+          },
+        });
       },
     });
   }

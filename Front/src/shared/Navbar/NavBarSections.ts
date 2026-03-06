@@ -4,21 +4,31 @@ export const MENU_ITEMS: NavItem[] = [
   {
     label: 'My Subscription',
     icon: 'credit-card',
-    route: '/subscription',
+    route: '/dashboard',
     roles: ['TenantAdmin', 'SystemAdmin'],
   },
-
-  {
-    label: 'Tenant Operations',
-    icon: 'briefcase',
-    route: '/operations',
-    roles: ['TenantAdmin', 'TenantUser'],
-  },
-
   {
     label: 'Admin Panel',
     icon: 'shield-halved',
     route: '/AdminPanel',
     roles: ['SystemAdmin'],
+  },
+  {
+    label: 'Shipments',
+    icon: 'truck',
+    route: '/Shipments',
+    roles: ['TenantAdmin', 'TenantUser'],
+  },
+  {
+    label: 'Clients',
+    icon: 'user',
+    route: '/Clients',
+    roles: ['TenantAdmin', 'TenantUser'],
+  },
+  {
+    label: 'Shipment Wizard',
+    icon: 'wand-magic-sparkles',
+    route: '/shipmentwizard',
+    roles: ['TenantAdmin', 'TenantUser'],
   },
 ];

@@ -41,3 +41,67 @@ export interface SystemMetrics {
   topTenants: TenantUsage[];
   trafficStats: HourlyTraffic[];
 }
+
+export interface ShipmentItemsDTO {
+  productName: string;
+  quantity: number;
+  price: number;
+}
+export interface CreateShipmentDTO {
+  clientId: string;
+  receiverName: string;
+  receiverPhone: string;
+  destination: string;
+  items: ShipmentItemsDTO[];
+}
+
+export interface UpdateShipmentDTO {
+  id: string;
+  status: ShipmentStatus;
+}
+
+export enum ShipmentStatus {
+  Pending = 'Pending',
+  Shipped = 'InTransit',
+  Delivered = 'Delivered',
+  Cancelled = 'Cancelled',
+}
+
+export interface ShipmentDto {
+  id: string;
+  trackingNumber: string;
+  status: string;
+  receiverName: string;
+  createdAt: Date;
+  weight: number;
+  destination: string;
+}
+export interface ClientDTO {
+  id: string;
+  name: string;
+  phone: string;
+  address: string;
+  createdAt: string;
+}
+
+export interface UpdateClientDTO {
+  id: string;
+  name: string;
+  phone: string;
+  address: string;
+}
+
+export interface TrafficStatDto {
+  hour: number;
+  requestCount: number;
+}
+
+export interface ClientStatsDto {
+  totalShipments: number;
+  pendingShipments: number;
+  deliveredShipments: number;
+  totalRevenue: number;
+  trafficStats: TrafficStatDto[];
+  successRate: number;
+  averageDeliveryTimeDays: number;
+}

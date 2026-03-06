@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import Swal from 'sweetalert2';
-import { SubscriptionPlanDetailsDto, TenantManagement } from '../../core/core-models';
+import {
+  ClientStatsDto,
+  SubscriptionPlanDetailsDto,
+  TenantManagement,
+} from '../../core/core-models';
 import { SubscritpionDashboard_service } from '../../core/Services/SubscritpionDashboard_service';
 import { AuthService } from '../../shared/shared_services/auth.service';
 
@@ -23,7 +27,7 @@ export class SubscriptionDashboardComponent implements OnInit {
   isSystemAdmin = computed(() => this.roles().includes('SystemAdmin'));
   isTenantAdmin = computed(() => this.roles().includes('TenantAdmin'));
   isTenantUser = computed(() => this.roles().includes('TenantUser'));
-
+  stats?: ClientStatsDto;
   TenantData = signal<TenantManagement[]>([]);
   subscriptionData = signal<SubscriptionPlanDetailsDto | null>(null);
   ngOnInit() {
@@ -45,12 +49,25 @@ export class SubscriptionDashboardComponent implements OnInit {
       this.LoadAllTenants();
     } else if (this.isTenantAdmin() && this.tenantId()) {
       this.loadTenantSubscriptionByID(this.tenantId());
+      this.getClientStatistics();
     }
   }
 
   loadTenantSubscriptionByID(id: string) {
     this.subService.getTenantSubscriptionByTenantId(id).subscribe((res) => {
       if (res.success) this.subscriptionData.set(res.data);
+    });
+  }
+
+  getClientStatistics(): void {
+    this.subService.getClientStatistics().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.stats = res.data;
+        } else {
+          console.warn('Statistics fetch failed:', res.errors);
+        }
+      },
     });
   }
 
