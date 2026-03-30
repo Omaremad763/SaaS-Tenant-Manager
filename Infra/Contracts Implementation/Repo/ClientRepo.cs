@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts.IRepo;
+﻿using Application.Contracts.IRepo;
 
 using Domain.Entities.TenantDBEntities;
 
@@ -13,6 +7,7 @@ using Infra.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Contracts_Implementation.Repo;
+
 public class ClientRepository(TenantDbContext context) : IClientRepository
 {
     private readonly TenantDbContext _context = context;
@@ -24,7 +19,7 @@ public class ClientRepository(TenantDbContext context) : IClientRepository
 
     public async Task<Client?> GetByIdAsync(Guid id)
     {
-        return await _context.Clients.AsNoTracking().FirstOrDefaultAsync(x=>x.Id==id);
+        return await _context.Clients.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task AddAsync(Client client)
@@ -41,5 +36,4 @@ public class ClientRepository(TenantDbContext context) : IClientRepository
     {
         _context.Clients.Remove(client);
     }
-
 }

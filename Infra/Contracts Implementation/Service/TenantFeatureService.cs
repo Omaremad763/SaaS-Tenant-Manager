@@ -2,12 +2,10 @@
 using Application.Contracts.IService;
 using Application.DTOs;
 
-using Domain.Entities;
 using Domain.Entities.MasterDB;
 
-using Infrastructure.Contracts_Implementation;
-
 namespace Infra.Contracts_Implementation.Entites_Contracts.TenantFeatures;
+
 public class TenantFeatureService(IUnitofWork unitOfWork) : ITenantFeatureService
 {
     public async Task<bool> ToggleFeatureAsync(ToggleFeatureAccessDto dto)
@@ -35,12 +33,13 @@ public class TenantFeatureService(IUnitofWork unitOfWork) : ITenantFeatureServic
         }
         return await unitOfWork.CommitAsync() > 0;
     }
+
     public async Task<FeatureStatusDto?> CheckTenantAccesedFeatures(Guid tenantId, string featureCode, CancellationToken ct)
     {
-        var dto = new FeatureStatusDto(Guid.Empty, null,false,false);
+        var dto = new FeatureStatusDto(Guid.Empty, null, false, false);
         var feature = await unitOfWork.TenantFeatureRepo.GetAccessedFeatures(tenantId, featureCode);
         if (feature == null) return dto;
-        dto = new FeatureStatusDto(feature.FeatureTable.Id,feature.FeatureTable.FeatureName, true,true);
+        dto = new FeatureStatusDto(feature.FeatureTable.Id, feature.FeatureTable.FeatureName, true, true);
         return dto;
     }
 }

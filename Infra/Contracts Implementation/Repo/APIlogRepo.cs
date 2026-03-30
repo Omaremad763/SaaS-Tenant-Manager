@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts.IRepo;
+﻿using Application.Contracts.IRepo;
 using Application.DTOs;
 
 using Domain.Entities.MasterDB;
 
 using Infra.Persistence.Contexts;
 
-using Infrastructure.Contracts_Implementation;
-
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Contracts_Implementation.Repo;
+
 public class APIlogRepo(MasterDbContext _context) : IAPIlogRepo
 {
     public async Task<SystemMetricsDto> GetSystemMetricsAsync()
@@ -29,11 +22,12 @@ public class APIlogRepo(MasterDbContext _context) : IAPIlogRepo
         var avgResponseTime = await logsQuery.AverageAsync(l => (double?)l.DurationMs) ?? 0;
 
         var topTenants = await logsQuery
-            .GroupBy(l => l.TenantId)     
-            .Select(g => new {
+            .GroupBy(l => l.TenantId)
+            .Select(g => new
+            {
                 Id = g.Key,
                 Count = g.Count(),
-                Name = g.Max(l => l.Tenant.Name)      
+                Name = g.Max(l => l.Tenant.Name)
             })
             .OrderByDescending(x => x.Count)
             .Take(5)
@@ -60,11 +54,12 @@ public class APIlogRepo(MasterDbContext _context) : IAPIlogRepo
         return new SystemMetricsDto(
             totalRequests,
             globalErrorCount,
-            Math.Round(avgResponseTime, 2),     
+            Math.Round(avgResponseTime, 2),
             topTenants,
             trafficStats
         );
     }
+
     public async Task SaveLogAsync(ApiLog log)
     {
         _context.ApiLogs.Add(log);

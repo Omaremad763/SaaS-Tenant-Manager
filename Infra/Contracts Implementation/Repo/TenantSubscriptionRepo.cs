@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts.IRepo;
+﻿using Application.Contracts.IRepo;
 
 using Domain.Entities.MasterDB;
 
@@ -13,13 +7,14 @@ using Infra.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Contracts_Implementation.Repo;
-public class TenantSubscriptionRepo(MasterDbContext context): ITenantSubscriptionRepo
-{
 
+public class TenantSubscriptionRepo(MasterDbContext context) : ITenantSubscriptionRepo
+{
     public async Task AddTenantSubscriptionAsync(TenantSubscription subscription)
     {
         await context.TenantSubscriptions.AddAsync(subscription);
     }
+
     public async Task<TenantSubscription?> GetTenantSubscriptionAsync(Guid tenantId, CancellationToken cancellationToken)
     {
         return await context.TenantSubscriptions
@@ -27,5 +22,4 @@ public class TenantSubscriptionRepo(MasterDbContext context): ITenantSubscriptio
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.TenantId == tenantId && s.IsActive, cancellationToken);
     }
-
 }

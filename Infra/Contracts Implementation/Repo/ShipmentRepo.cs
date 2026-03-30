@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
-using Application.Contracts.IRepo;
-using Application.CQRS;
+﻿using Application.Contracts.IRepo;
 using Application.DTOs;
 
-using Domain.Entities.MasterDB;
 using Domain.Entities.TenantDBEntities;
 
 using IdGen;
@@ -20,7 +10,8 @@ using Infra.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.TenantDBRepo;
-public class ShipmentRepo(TenantDbContext _Tenantcontext, IIdGenerator<long> _idGenerator):IShipmentRepo
+
+public class ShipmentRepo(TenantDbContext _Tenantcontext, IIdGenerator<long> _idGenerator) : IShipmentRepo
 {
     private async Task<List<TrafficStatDto>> GetHourlyTrafficAsync(CancellationToken ct)
     {
@@ -28,7 +19,7 @@ public class ShipmentRepo(TenantDbContext _Tenantcontext, IIdGenerator<long> _id
 
         var stats = await _Tenantcontext.Shipments
             .Where(s => s.CreatedAt >= yesterday)
-            .GroupBy(s => s.CreatedAt.Hour)   
+            .GroupBy(s => s.CreatedAt.Hour)
             .Select(g => new TrafficStatDto
             {
                 Hour = g.Key,
@@ -46,6 +37,7 @@ public class ShipmentRepo(TenantDbContext _Tenantcontext, IIdGenerator<long> _id
 
         return fullDayStats;
     }
+
     public async Task<bool> CreateShipment(CreateShipmentDto DTO, CancellationToken ct)
     {
         decimal PlanRate = 50m;
@@ -70,6 +62,7 @@ public class ShipmentRepo(TenantDbContext _Tenantcontext, IIdGenerator<long> _id
         var saving = await _Tenantcontext.SaveChangesAsync(ct);
         return saving >= 0;
     }
+
     public async Task<bool> UpdateShipment(UpdateShipmentDto DTO, CancellationToken ct)
     {
         var shipment = await _Tenantcontext.Shipments.FirstOrDefaultAsync(s => s.Id == DTO.Id, ct);
@@ -78,23 +71,24 @@ public class ShipmentRepo(TenantDbContext _Tenantcontext, IIdGenerator<long> _id
         shipment.CreatedAt = DateTime.UtcNow;
         return await _Tenantcontext.SaveChangesAsync(ct) > 0;
     }
-    public async Task<List<ShipmentDto>>GetTenantShipments(CancellationToken ct)
+
+    public async Task<List<ShipmentDto>> GetTenantShipments(CancellationToken ct)
     {
         return await _Tenantcontext.Shipments
-                .AsNoTracking()              
+                .AsNoTracking()
                 .Select(s => new ShipmentDto
                 {
                     Id = s.Id,
-                    TrackingNumber =s.Trackingnumber,
+                    TrackingNumber = s.Trackingnumber,
                     Status = s.Status,
                     ReceiverName = s.ReceiverName,
-                    Destination=s.DeliveryAddress,
-                    CreatedAt=s.CreatedAt
-
+                    Destination = s.DeliveryAddress,
+                    CreatedAt = s.CreatedAt
                 })
                 .ToListAsync(ct);
     }
-    public async Task<ClientStatsDto> GetClientStatistics( CancellationToken ct)
+
+    public async Task<ClientStatsDto> GetClientStatistics(CancellationToken ct)
     {
         var total = await _Tenantcontext.Shipments.CountAsync(ct);
         var delivered = await _Tenantcontext.Shipments.CountAsync(s => s.Status == ShipmentStatus.Delivered, ct);

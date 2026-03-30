@@ -1,5 +1,4 @@
-﻿using Domain.Entities.MasterDB;
-using Domain.Entities.TenantDBEntities;
+﻿using Domain.Entities.TenantDBEntities;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +13,7 @@ public class TenantDbContext(
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly MasterDbContext _masterDb = masterDb;
+
     public TenantDbContext(DbContextOptions<TenantDbContext> options)
      : this(options, null!, null!)
     {
@@ -30,7 +30,7 @@ public class TenantDbContext(
             base.OnConfiguring(optionsBuilder);
             return;
         }
-        //Database-per-Tenant Strategy filter 
+        //Database-per-Tenant Strategy filter
         var user = _httpContextAccessor?.HttpContext?.User;
         if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
         {
@@ -53,6 +53,7 @@ public class TenantDbContext(
             base.OnConfiguring(optionsBuilder);
         }
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -71,6 +72,7 @@ public class TenantDbContext(
             .HasForeignKey(si => si.ShipmentId);
     }
 }
+
 public class TenantDbContextFactory : IDesignTimeDbContextFactory<TenantDbContext>
 {
     public TenantDbContext CreateDbContext(string[] args)

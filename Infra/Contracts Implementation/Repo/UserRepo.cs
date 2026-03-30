@@ -6,7 +6,6 @@ using Domain.Entities.MasterDB;
 using Infra.Persistence.Contexts;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Contracts_Implementation.Auth_Page;
 
@@ -49,14 +48,17 @@ public class UserRepository(
     {
         return await _userManager.CheckPasswordAsync(user, password);
     }
+
     public async Task<User?> FindByEmailAsync(string Email)
     {
         return await _userManager.FindByEmailAsync(Email);
     }
+
     public async Task<IList<string>> GetRolesAsync(User user)
     {
         return await _userManager.GetRolesAsync(user);
     }
+
     public async Task<EnumSystemAdminSeedResult> EnsureSystemAdminAsync()
     {
         var existingAdmin = await _userManager.GetUsersInRoleAsync("SystemAdmin");
@@ -72,10 +74,7 @@ public class UserRepository(
         };
         await CreateUserWithRoleAsync(user, password, "SystemAdmin");
         int saving = _context.SaveChanges();
-        if (saving<0) return EnumSystemAdminSeedResult.Failed;
+        if (saving < 0) return EnumSystemAdminSeedResult.Failed;
         return EnumSystemAdminSeedResult.Created;
     }
-
 }
-
-

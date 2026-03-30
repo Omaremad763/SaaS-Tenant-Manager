@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using FluentValidation;
+﻿using FluentValidation;
 
 using MediatR;
 
@@ -15,7 +9,7 @@ namespace Infra.Extentions
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators = validators;
 
-        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken )
+        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             if (_validators.Any())
             {
@@ -27,6 +21,5 @@ namespace Infra.Extentions
             }
             return await next();
         }
-
     }
 }

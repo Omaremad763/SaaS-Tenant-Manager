@@ -6,24 +6,19 @@ using Application;
 using Application.Contracts;
 using Application.Contracts.IService;
 using Application.DTOs;
-using Application.Enums;
 
 using AutoMapper;
 
 using Domain.Entities.MasterDB;
 
-using Infra;
-
 using MediatR;
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 using EnumSystemAdminSeedResult = Application.Enums.EnumSystemAdminSeedResult;
 namespace User_service_Imp;
-public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitofwork) : IUserService
+public class UserService(IMapper _mapper, IMediator _mediator, IUnitofWork unitofwork) : IUserService
 {
-
     private static string GenerateJwt(User user, IList<string> roles)
     {
         var claims = new List<Claim>
@@ -101,21 +96,22 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
 
         //Transcation begin
         using var transaction = await unitofwork.BeginTransactionAsync();
- try { 
-        var Register = await unitofwork.UserRepository.CreateUserWithRoleAsync(user, dto.Password, "TenantAdmin");
-        if (Register.Errors.Any())
+        try
         {
-            var errorMessages = string.Join(", ", Register.Errors.Select(e => e.Description));
-            return ResponseDTO with
+            var Register = await unitofwork.UserRepository.CreateUserWithRoleAsync(user, dto.Password, "TenantAdmin");
+            if (Register.Errors.Any())
             {
-                TenantId = null,
-                Status = "failed",
-                Message = $"Registration failed: {errorMessages}"
-            };
-        }
+                var errorMessages = string.Join(", ", Register.Errors.Select(e => e.Description));
+                return ResponseDTO with
+                {
+                    TenantId = null,
+                    Status = "failed",
+                    Message = $"Registration failed: {errorMessages}"
+                };
+            }
             await _mediator.Publish(new TenantCreatedEvent(addTenant.Id, addTenant.ConnectionString));
-      }
-        catch (Exception ){ await transaction.RollbackAsync(); return ResponseDTO; }
+        }
+        catch (Exception) { await transaction.RollbackAsync(); return ResponseDTO; }
 
         await transaction.CommitAsync();
         await unitofwork.CommitAsync();
@@ -134,7 +130,6 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
             Email = dto.Email,
             TenantId = tenant.Id,
             TenantDomain = domainFromEmail
-
         };
         var result = await unitofwork.UserRepository.CreateUserWithRoleAsync(user, dto.Password, "TenantUser");
         if (!result.Succeeded)
@@ -156,10 +151,9 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
             var domain = dto.Email.Split('@').Last().ToLower();
             var tenant = await unitofwork.TenantRepo.GetTenantByDomainAsync(domain);
 
-            if (tenant == null || user.TenantId != tenant.Id)throw new UnauthorizedAccessException("Domain/Tenant mismatch.");
+            if (tenant == null || user.TenantId != tenant.Id) throw new UnauthorizedAccessException("Domain/Tenant mismatch.");
         }
         return GenerateJwt(user, roles);
-
     }
     public async Task<EnumSystemAdminSeedResult> EnsureSystemAdminAsync()
     {
@@ -167,4 +161,3 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
         return ensureAdmin;
     }
 }
-                                                                                              

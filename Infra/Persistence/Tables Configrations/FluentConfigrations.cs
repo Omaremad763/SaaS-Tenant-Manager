@@ -2,7 +2,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 namespace Infrastructure.Persistence;
+
 public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 {
     public void Configure(EntityTypeBuilder<Tenant> builder)
@@ -19,6 +21,7 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
                .OnDelete(DeleteBehavior.Cascade);
     }
 }
+
 public class SubscriptionPlanConfiguration : IEntityTypeConfiguration<SubscriptionPlan>
 {
     public void Configure(EntityTypeBuilder<SubscriptionPlan> builder)
@@ -28,6 +31,7 @@ public class SubscriptionPlanConfiguration : IEntityTypeConfiguration<Subscripti
         builder.Property(sp => sp.Price).HasColumnType("decimal(18,2)");
     }
 }
+
 public class ApiLogConfiguration : IEntityTypeConfiguration<ApiLog>
 {
     public void Configure(EntityTypeBuilder<ApiLog> builder)
@@ -60,6 +64,7 @@ public class TenantSubscriptionConfiguration : IEntityTypeConfiguration<TenantSu
                .HasForeignKey<TenantSubscription>(ts => ts.TenantId)
                .OnDelete(DeleteBehavior.Cascade);
     }
+
     public class PlanFeatureConfiguration : IEntityTypeConfiguration<PlanFeature>
     {
         public void Configure(EntityTypeBuilder<PlanFeature> builder)
@@ -77,6 +82,7 @@ public class TenantSubscriptionConfiguration : IEntityTypeConfiguration<TenantSu
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
+
     public class FeatureConfiguration : IEntityTypeConfiguration<TenantFeature>
     {
         public void Configure(EntityTypeBuilder<TenantFeature> builder)

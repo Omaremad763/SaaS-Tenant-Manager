@@ -1,6 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using System.Text;
 
 using ApilogsServiceImp;
 
@@ -22,18 +20,18 @@ using Infra.Persistence.Contexts;
 using Infrastructure.Contracts_Implementation;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+
 namespace Infra.Extentions;
+
 public static class DependenciesCollector
 {
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        var generator = new IdGenerator(0);        
+        var generator = new IdGenerator(0);
         var issuer = Environment.GetEnvironmentVariable("SaasJWTIssuer");
         var audience = Environment.GetEnvironmentVariable("SaasJWTAudience");
         var jwtKey = Environment.GetEnvironmentVariable("SaasJwtKey");
@@ -50,17 +48,22 @@ public static class DependenciesCollector
         services.AddScoped<ISaasServices, SaasServices>();
         services.AddScoped<IApiLogService, ApiLogService>();
         services.AddScoped<IUnitofWork, UnitofWork>();
-        services.AddAutoMapper(cfg => {
+        services.AddAutoMapper(cfg =>
+        {
             cfg.AddProfile<AutoMapperProfile>();
         }, typeof(AutoMapperProfile).Assembly);
+
         #region Mediator
+
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(assembly);
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
         services.AddValidatorsFromAssembly(assembly);
-        #endregion
+
+        #endregion Mediator
+
         services.AddIdentity<User, UserRoles>(options =>
         {
             options.Password.RequireDigit = true;
@@ -70,6 +73,7 @@ public static class DependenciesCollector
         .AddEntityFrameworkStores<MasterDbContext>()
         .AddDefaultTokenProviders();
         services.AddSingleton<IIdGenerator<long>>(generator);
+
         #region Hangifre
 
         services.AddHangfire(config => config
@@ -80,10 +84,12 @@ public static class DependenciesCollector
         {
             options.UseNpgsqlConnection(DatabaseConfig);
         }));
-            services.AddHangfireServer();
-        #endregion
+        services.AddHangfireServer();
+
+        #endregion Hangifre
 
         #region Auth
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -98,17 +104,17 @@ public static class DependenciesCollector
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = issuer,        
-                    ValidAudience = audience,             
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
                     RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
                     NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
                 };
             });
-        services.AddAuthorization(); 
-        #endregion
+        services.AddAuthorization();
+
+        #endregion Auth
 
         return services;
     }
 }
-

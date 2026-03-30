@@ -7,9 +7,10 @@ using AutoMapper;
 using Domain.Entities.TenantDBEntities;
 
 namespace Infra.Contracts_Implementation.Repo;
+
 public class ClientService(IUnitofWork unitofWork, IMapper mapper) : IClientService
 {
-    private readonly  IUnitofWork unitofWork = unitofWork;
+    private readonly IUnitofWork unitofWork = unitofWork;
     private readonly IMapper mapper = mapper;
 
     public async Task<IEnumerable<ClientDto>> GetAllClientsAsync()
@@ -24,7 +25,6 @@ public class ClientService(IUnitofWork unitofWork, IMapper mapper) : IClientServ
         var Data = await unitofWork.ClientRepository.GetByIdAsync(id);
         var mapping = mapper.Map<ClientDto>(Data);
         return mapping;
-
     }
 
     public async Task CreateClientAsync(ClientDto DTO)
@@ -41,7 +41,7 @@ public class ClientService(IUnitofWork unitofWork, IMapper mapper) : IClientServ
         await unitofWork.TenantCommitAsync();
     }
 
-    public async  Task DeleteClientAsync(ClientDto DTO)
+    public async Task DeleteClientAsync(ClientDto DTO)
     {
         var mapping = mapper.Map<Client>(DTO);
         var client = await unitofWork.ClientRepository.GetByIdAsync(DTO.Id);
@@ -52,4 +52,3 @@ public class ClientService(IUnitofWork unitofWork, IMapper mapper) : IClientServ
         }
     }
 }
-
