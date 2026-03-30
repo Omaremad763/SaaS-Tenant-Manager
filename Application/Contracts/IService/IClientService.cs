@@ -11,9 +11,9 @@ using Domain.Entities.TenantDBEntities;
 namespace Application.Contracts.IService;
 public interface IClientService
 {
-    Task<IEnumerable<ClientDTO>> GetAllClientsAsync();
-    Task<ClientDTO?> GetClientByIdAsync(Guid id);
-    Task CreateClientAsync(ClientDTO DTO);
-   Task UpdateClientAsync(UpdateClientDTO DTO);
-    Task DeleteClientAsync(ClientDTO DTO);
+    Task<IEnumerable<ClientDto>> GetAllClientsAsync();
+    Task<ClientDto?> GetClientByIdAsync(Guid id);
+    Task CreateClientAsync(ClientDto DTO);
+   Task UpdateClientAsync(UpdateClientDto DTO);
+    Task DeleteClientAsync(ClientDto DTO);
 }

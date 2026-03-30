@@ -13,6 +13,6 @@ namespace Application.Contracts.IRepo
         Task<IList<string>> GetRolesAsync(User user);
         Task<User?> FindByEmailAsync( string Email);
         Task<bool> CheckPasswordAsync(User user, string password);
-        Task<SystemAdminSeedResultEnum> EnsureSystemAdminAsync();
+        Task<EnumSystemAdminSeedResult> EnsureSystemAdminAsync();
      }
 }

@@ -11,7 +11,7 @@ public class ShipmentsController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
     [Route("CreateShipment")]
-    public async Task<IActionResult> CreateShipment([FromBody] CreateShipmentDTO dto)
+    public async Task<IActionResult> CreateShipment([FromBody] CreateShipmentDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
         var result = await mediator.Send(new CreateShipmentCommand(dto));
@@ -20,7 +20,7 @@ public class ShipmentsController(IMediator mediator) : ControllerBase
     }
     [HttpPut]
     [Route("UpdateShipmentStatus")]
-    public async Task<IActionResult> UpdateShipmentStatus([FromBody] UpdateShipmentDTO DTO)
+    public async Task<IActionResult> UpdateShipmentStatus([FromBody] UpdateShipmentDto DTO)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 

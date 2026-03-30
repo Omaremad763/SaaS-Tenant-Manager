@@ -9,6 +9,6 @@ using Application.DTOs;
 namespace Application.Contracts.IService;
 public interface ITenantFeatureService
 {
-    Task<bool> ToggleFeatureAsync(ToggleFeatureAccessDTO DTO);
+    Task<bool> ToggleFeatureAsync(ToggleFeatureAccessDto DTO);
     Task<FeatureStatusDto?> CheckTenantAccesedFeatures(Guid tenantId, string featureCode, CancellationToken ct);
 }

@@ -19,7 +19,7 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-using SystemAdminSeedResultEnum = Application.Enums.SystemAdminSeedResultEnum;
+using EnumSystemAdminSeedResult = Application.Enums.EnumSystemAdminSeedResult;
 namespace User_service_Imp;
 public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitofwork) : IUserService
 {
@@ -115,7 +115,7 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
         }
             await _mediator.Publish(new TenantCreatedEvent(addTenant.Id, addTenant.ConnectionString));
       }
-        catch (Exception ex){ await transaction.RollbackAsync(); return ResponseDTO; }
+        catch (Exception ){ await transaction.RollbackAsync(); return ResponseDTO; }
 
         await transaction.CommitAsync();
         await unitofwork.CommitAsync();
@@ -161,7 +161,7 @@ public class UserService(IMapper _mapper, IMediator _mediator,IUnitofWork unitof
         return GenerateJwt(user, roles);
 
     }
-    public async Task<SystemAdminSeedResultEnum> EnsureSystemAdminAsync()
+    public async Task<EnumSystemAdminSeedResult> EnsureSystemAdminAsync()
     {
         var ensureAdmin = await unitofwork.UserRepository.EnsureSystemAdminAsync();
         return ensureAdmin;

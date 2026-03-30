@@ -8,6 +8,6 @@ namespace Application.Contracts.IService
         Task<string> Login(LoginDto dto);
         Task<ProvisioningStatusDto> RegisterTenantAdmin(TenantRegistrationDto dto);
         Task<string> RegisterTenantUser(TenantUserRegistraionDto dto);
-        Task<SystemAdminSeedResultEnum> EnsureSystemAdminAsync();
+        Task<EnumSystemAdminSeedResult> EnsureSystemAdminAsync();
     }
 }

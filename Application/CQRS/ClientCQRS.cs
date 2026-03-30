@@ -14,16 +14,16 @@ using MediatR;
 
 namespace Application.CQRS;
 //commands
-public record CreateClientCommand(ClientDTO DTO) : IRequest<Unit>;
+public record CreateClientCommand(ClientDto DTO) : IRequest<Unit>;
 
-public record UpdateClientCommand(UpdateClientDTO DTO) : IRequest<Unit>;
+public record UpdateClientCommand(UpdateClientDto DTO) : IRequest<Unit>;
 
 public record DeleteClientCommand(Guid Id) : IRequest<Unit>;
 
 //queries 
-public record GetAllClientsQuery() : IRequest<IEnumerable<ClientDTO>>;
+public record GetAllClientsQuery() : IRequest<IEnumerable<ClientDto>>;
 
-public record GetClientByIdQuery(Guid Id) : IRequest<ClientDTO?>;
+public record GetClientByIdQuery(Guid Id) : IRequest<ClientDto?>;
 public class CreateClientCommandValidator : AbstractValidator<CreateClientCommand>
 {
     public CreateClientCommandValidator()
@@ -73,37 +73,37 @@ public class ClientHandler(ISaasServices SaasServices) :
     IRequestHandler<CreateClientCommand, Unit>,
     IRequestHandler<UpdateClientCommand, Unit>,
     IRequestHandler<DeleteClientCommand, Unit>,
-    IRequestHandler<GetAllClientsQuery, IEnumerable<ClientDTO>>,
-    IRequestHandler<GetClientByIdQuery, ClientDTO?>
+    IRequestHandler<GetAllClientsQuery, IEnumerable<ClientDto>>,
+    IRequestHandler<GetClientByIdQuery, ClientDto?>
 {
     private readonly ISaasServices _SaasServices = SaasServices;
 
-    public async Task<Unit> Handle(CreateClientCommand request, CancellationToken ct)
+    public async Task<Unit> Handle(CreateClientCommand request, CancellationToken cancellationToken)
     {
         await _SaasServices.ClientService.CreateClientAsync(request.DTO);
         return Unit.Value;
 
     }
 
-    public async Task<Unit> Handle(UpdateClientCommand request, CancellationToken ct)
+    public async Task<Unit> Handle(UpdateClientCommand request, CancellationToken cancellationToken)
     {
         await _SaasServices.ClientService.UpdateClientAsync(request.DTO);
         return Unit.Value;
     }
 
-    public async Task<Unit> Handle(DeleteClientCommand request, CancellationToken ct)
+    public async Task<Unit> Handle(DeleteClientCommand request, CancellationToken cancellationToken)
     {
-        var dto = new ClientDTO { Id = request.Id };
+        var dto = new ClientDto { Id = request.Id };
         await _SaasServices.ClientService.DeleteClientAsync(dto);
         return Unit.Value;
     }
 
-    public async Task<IEnumerable<ClientDTO>> Handle(GetAllClientsQuery request, CancellationToken ct)
+    public async Task<IEnumerable<ClientDto>> Handle(GetAllClientsQuery request, CancellationToken cancellationToken)
     {
        return await _SaasServices.ClientService.GetAllClientsAsync();
     }
 
-    public async Task<ClientDTO?> Handle(GetClientByIdQuery request, CancellationToken ct)
+    public async Task<ClientDto?> Handle(GetClientByIdQuery request, CancellationToken cancellationToken)
     {
         return await _SaasServices.ClientService.GetClientByIdAsync(request.Id);
     }

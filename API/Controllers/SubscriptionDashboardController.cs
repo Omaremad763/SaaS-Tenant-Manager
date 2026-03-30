@@ -35,7 +35,7 @@ public class SubscriptionDashboardController(IMediator mediator) : ControllerBas
     }
     [Authorize(Roles = "SystemAdmin")] 
     [HttpPatch("toggleFeature")]
-    public async Task<IActionResult> ToggleFeature([FromBody] ToggleFeatureAccessDTO request)
+    public async Task<IActionResult> ToggleFeature([FromBody] ToggleFeatureAccessDto request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
         var result = await mediator.Send(new ToggleFeatureCommand(request));

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class relations : Migration
+    public partial class Relations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -93,7 +93,7 @@ namespace Infra.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_PlanFeatures_SubscriptionPlanId_FeatureId",
                 table: "PlanFeatures",
-                columns: new[] { "SubscriptionPlanId", "FeatureId" },
+                columns: ["SubscriptionPlanId", "FeatureId"],
                 unique: true);
 
             migrationBuilder.AddForeignKey(

@@ -16,7 +16,7 @@ namespace Infra.Migrations
 {
     [DbContext(typeof(MasterDbContext))]
     [Migration("20260226130538_relations")]
-    partial class relations
+    partial class Relations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

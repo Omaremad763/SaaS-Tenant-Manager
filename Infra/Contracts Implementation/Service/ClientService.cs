@@ -12,36 +12,36 @@ public class ClientService(IUnitofWork unitofWork, IMapper mapper) : IClientServ
     private readonly  IUnitofWork unitofWork = unitofWork;
     private readonly IMapper mapper = mapper;
 
-    public async Task<IEnumerable<ClientDTO>> GetAllClientsAsync()
+    public async Task<IEnumerable<ClientDto>> GetAllClientsAsync()
     {
         var data = await unitofWork.ClientRepository.GetAllAsync();
-        var mapping = mapper.Map<IEnumerable<ClientDTO>>(data);
+        var mapping = mapper.Map<IEnumerable<ClientDto>>(data);
         return mapping;
     }
 
-    public async Task<ClientDTO?> GetClientByIdAsync(Guid id)
+    public async Task<ClientDto?> GetClientByIdAsync(Guid id)
     {
         var Data = await unitofWork.ClientRepository.GetByIdAsync(id);
-        var mapping = mapper.Map<ClientDTO>(Data);
+        var mapping = mapper.Map<ClientDto>(Data);
         return mapping;
 
     }
 
-    public async Task CreateClientAsync(ClientDTO DTO)
+    public async Task CreateClientAsync(ClientDto DTO)
     {
         var mapping = mapper.Map<Client>(DTO);
         await unitofWork.ClientRepository.AddAsync(mapping);
         await unitofWork.TenantCommitAsync();
     }
 
-    public async Task UpdateClientAsync(UpdateClientDTO DTO)
+    public async Task UpdateClientAsync(UpdateClientDto DTO)
     {
         var mapping = mapper.Map<Client>(DTO);
         unitofWork.ClientRepository.Update(mapping);
         await unitofWork.TenantCommitAsync();
     }
 
-    public async  Task DeleteClientAsync(ClientDTO DTO)
+    public async  Task DeleteClientAsync(ClientDto DTO)
     {
         var mapping = mapper.Map<Client>(DTO);
         var client = await unitofWork.ClientRepository.GetByIdAsync(DTO.Id);

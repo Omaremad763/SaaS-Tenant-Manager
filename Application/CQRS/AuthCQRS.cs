@@ -22,7 +22,7 @@ public  class TenantRegistrationDtoValidator : AbstractValidator<TenantRegistrat
         RuleFor(x => x.Name).NotEmpty().WithMessage("Tenant name is required.").MaximumLength(100);
         RuleFor(x => x.Slug).NotEmpty().WithMessage("Slug is required.").MaximumLength(50).Matches("^[a-z0-9-]+$")
             .WithMessage("Slug must contain only lowercase letters, numbers, and hyphens.")
-            .Must(slug => !slug.StartsWith("-") && !slug.EndsWith("-"))
+            .Must(slug => !slug.StartsWith('-') && !slug.EndsWith('-'))
             .WithMessage("Slug cannot start or end with a hyphen.");
         RuleFor(x => x.PlanId).NotEmpty().WithMessage("PlanId is required.");
         RuleFor(x => x.Email).NotEmpty().WithMessage("Email is required.").EmailAddress().WithMessage("Invalid Email Format.")

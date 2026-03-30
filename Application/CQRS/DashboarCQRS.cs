@@ -9,7 +9,7 @@ namespace Application.CQRS;
 
 //Queries
 public record GetTenantSubscriptionQuery(Guid TenantId) : IRequest<SubscriptionPlanDetailsDto>;
-public record ToggleFeatureCommand(ToggleFeatureAccessDTO DTO) : IRequest<bool>;
+public record ToggleFeatureCommand(ToggleFeatureAccessDto DTO) : IRequest<bool>;
 public record GetAllFeaturesQuery(): IRequest<List<string>>;
 public record GetAllTenantDataQuery(): IRequest<List<TenantManagementDto>>;
 
@@ -48,12 +48,6 @@ public class SubscriptionQueryHandler(ISaasServices Services) :
         return await _Services.TenantFeatureService.ToggleFeatureAsync(request.DTO);
 
     }
-    //public async Task<List<string>> Handle(GetAllFeaturesQuery request ,CancellationToken cancellationToken)
-    //{
-    //    return  _Services.FeatureService.GetAllFeatures();
-
-    //}
-
     public Task<List<TenantManagementDto>> Handle(GetAllTenantDataQuery request, CancellationToken cancellationToken)
     {
         return _Services.TenantService.GetAllTenantsManagementAsync();

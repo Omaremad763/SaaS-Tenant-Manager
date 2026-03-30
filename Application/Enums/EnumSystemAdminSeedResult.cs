@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Enums;
-public enum SystemAdminSeedResultEnum
+public enum EnumSystemAdminSeedResult
 {
     AlreadyExists,
     Created,

@@ -15,7 +15,7 @@ public class ClientsController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
     [Route("CreateClient")]
-    public async Task<IActionResult> CreateClient([FromBody] ClientDTO dto)
+    public async Task<IActionResult> CreateClient([FromBody] ClientDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
         var result = await mediator.Send(new CreateClientCommand(dto));
@@ -25,7 +25,7 @@ public class ClientsController(IMediator mediator) : ControllerBase
 
     [HttpPut]
     [Route("UpdateClient")]
-    public async Task<IActionResult> UpdateClient([FromBody] UpdateClientDTO dto)
+    public async Task<IActionResult> UpdateClient([FromBody] UpdateClientDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
         var result = await mediator.Send(new UpdateClientCommand(dto));

@@ -10,7 +10,7 @@ using Infrastructure.Contracts_Implementation;
 namespace Infra.Contracts_Implementation.Entites_Contracts.TenantFeatures;
 public class TenantFeatureService(IUnitofWork unitOfWork) : ITenantFeatureService
 {
-    public async Task<bool> ToggleFeatureAsync(ToggleFeatureAccessDTO dto)
+    public async Task<bool> ToggleFeatureAsync(ToggleFeatureAccessDto dto)
     {
         var tenantFeature = await unitOfWork.TenantFeatureRepo.GetAccessedFeatures(dto.TenantId, dto.FeatureName);
 

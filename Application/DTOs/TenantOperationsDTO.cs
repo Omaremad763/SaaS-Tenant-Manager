@@ -17,26 +17,26 @@ public record ShipmentDto
     public DateTime CreatedAt { get; init; }
     public DateTime? LastUpdate { get; init; }
 }
-public record ShipmentItemsDTO(
+public record ShipmentItemsDto(
     string ProductName,
     int Quantity,
     decimal Price
 );
-public record CreateShipmentDTO
+public record CreateShipmentDto
 (
     string ReceiverName,
     string ReceiverPhone,
     string Destination,
-    List<ShipmentItemsDTO> Items,
+    List<ShipmentItemsDto> Items,
     Guid ClientId
 );
-public record UpdateShipmentDTO
+public record UpdateShipmentDto
 (
     Guid Id,
     ShipmentStatus Status
 );
 
-public class ClientDTO
+public class ClientDto
 {
     public Guid Id { get; set; }=new Guid();
     public string Name { get; set; }
@@ -45,7 +45,7 @@ public class ClientDTO
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
-public class UpdateClientDTO
+public class UpdateClientDto
 {
     public Guid Id { get; set; } 
     public string Name { get; set; }

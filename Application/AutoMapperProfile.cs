@@ -13,9 +13,9 @@ public class AutoMapperProfile : Profile
     {
         CreateMap<TenantRegistrationDto, Tenant>();
         CreateMap<GetTenantDto, Tenant>().ReverseMap();
-        CreateMap<ClientDTO, Client>();
-        CreateMap<UpdateClientDTO, Client>();
-        CreateMap<Client, ClientDTO>();
+        CreateMap<ClientDto, Client>();
+        CreateMap<UpdateClientDto, Client>();
+        CreateMap<Client, ClientDto>();
        
         #region TenantSubscription
         CreateMap<TenantSubscription, SubscriptionPlanDetailsDto>()

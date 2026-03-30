@@ -13,7 +13,7 @@ namespace Infra.Migrations
 {
     [DbContext(typeof(MasterDbContext))]
     [Migration("20260228183450_tenantfeatures")]
-    partial class tenantfeatures
+    partial class Tenantfeatures
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

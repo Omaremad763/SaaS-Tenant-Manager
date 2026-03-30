@@ -46,7 +46,7 @@ public class ShipmentRepo(TenantDbContext _Tenantcontext, IIdGenerator<long> _id
 
         return fullDayStats;
     }
-    public async Task<bool> CreateShipment(CreateShipmentDTO DTO, CancellationToken ct)
+    public async Task<bool> CreateShipment(CreateShipmentDto DTO, CancellationToken ct)
     {
         decimal PlanRate = 50m;
         long snowflakeId = _idGenerator.CreateId();
@@ -70,7 +70,7 @@ public class ShipmentRepo(TenantDbContext _Tenantcontext, IIdGenerator<long> _id
         var saving = await _Tenantcontext.SaveChangesAsync(ct);
         return saving >= 0;
     }
-    public async Task<bool> UpdateShipment(UpdateShipmentDTO DTO, CancellationToken ct)
+    public async Task<bool> UpdateShipment(UpdateShipmentDto DTO, CancellationToken ct)
     {
         var shipment = await _Tenantcontext.Shipments.FirstOrDefaultAsync(s => s.Id == DTO.Id, ct);
         if (shipment == null) return false;

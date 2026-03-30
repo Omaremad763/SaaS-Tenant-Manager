@@ -14,8 +14,8 @@ using FluentValidation;
 using MediatR;
 
 namespace Application.CQRS;
-public record CreateShipmentCommand(CreateShipmentDTO DTO) : IRequest<bool>;
-public record UpdateShipmentStatusCommand(UpdateShipmentDTO DTO) : IRequest<bool>;
+public record CreateShipmentCommand(CreateShipmentDto DTO) : IRequest<bool>;
+public record UpdateShipmentStatusCommand(UpdateShipmentDto DTO) : IRequest<bool>;
 
 public record GetTenantShipmentsQuery() : IRequest<List<ShipmentDto?>>;
 public record GetClientStatisticsQuery() : IRequest<ClientStatsDto>;
@@ -66,26 +66,26 @@ public class ShipmentHandler(ISaasServices services) :
     IRequestHandler<GetTenantShipmentsQuery, List<ShipmentDto?>>,
     IRequestHandler<GetClientStatisticsQuery, ClientStatsDto>
 {
-    public async Task<bool> Handle(CreateShipmentCommand request, CancellationToken ct)
+    public async Task<bool> Handle(CreateShipmentCommand request, CancellationToken cancellationToken)
     {
-        return await services.ShipmentService.CreateShipment(request.DTO, ct);
+        return await services.ShipmentService.CreateShipment(request.DTO, cancellationToken);
     }
 
-    public async Task<bool> Handle(UpdateShipmentStatusCommand request, CancellationToken ct)
+    public async Task<bool> Handle(UpdateShipmentStatusCommand request, CancellationToken cancellationToken)
     {
-        return await services.ShipmentService.UpdateShipment(request.DTO, ct);
-
-    }
-
-    public async Task<List<ShipmentDto?>> Handle(GetTenantShipmentsQuery request, CancellationToken ct)
-    {
-        return await services.ShipmentService.GetTenantShipments( ct);
+        return await services.ShipmentService.UpdateShipment(request.DTO, cancellationToken);
 
     }
 
-    public async Task<ClientStatsDto> Handle(GetClientStatisticsQuery request, CancellationToken ct)
+    public async Task<List<ShipmentDto?>> Handle(GetTenantShipmentsQuery request, CancellationToken cancellationToken)
     {
-        return await services.ShipmentService.GetClientStatistics(ct);
+        return await services.ShipmentService.GetTenantShipments( cancellationToken);
+
+    }
+
+    public async Task<ClientStatsDto> Handle(GetClientStatisticsQuery request, CancellationToken cancellationToken)
+    {
+        return await services.ShipmentService.GetClientStatistics(cancellationToken);
 
     }
 }

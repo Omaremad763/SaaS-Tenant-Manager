@@ -30,11 +30,11 @@ public class SubscriptionPlanDetailsDto
     public bool IsActive { get; set; }
     public SubscriptionPlanDetailsDto() { }
 }
-public record GetFeatureAccessDTO(
+public record GetFeatureAccessDto(
 Guid TenantId,
 string FeatureName
 );
-public record ToggleFeatureAccessDTO(
+public record ToggleFeatureAccessDto(
 Guid TenantId,
 string FeatureName,
 bool IsEnabled

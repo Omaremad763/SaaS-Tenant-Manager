@@ -57,4 +57,4 @@ app.UseHangfireDashboard("/HangfireSass", new DashboardOptions
     DashboardTitle = "SaaS Manager - Background Jobs"
 });
 app.MapControllers();
-app.Run();
+await app.RunAsync();

@@ -57,11 +57,11 @@ public class UserRepository(
     {
         return await _userManager.GetRolesAsync(user);
     }
-    public async Task<SystemAdminSeedResultEnum> EnsureSystemAdminAsync()
+    public async Task<EnumSystemAdminSeedResult> EnsureSystemAdminAsync()
     {
         var existingAdmin = await _userManager.GetUsersInRoleAsync("SystemAdmin");
 
-        if (existingAdmin.Any()) return SystemAdminSeedResultEnum.AlreadyExists;
+        if (existingAdmin.Any()) return EnumSystemAdminSeedResult.AlreadyExists;
         var password = Environment.GetEnvironmentVariable("SystemAdminPassword");
         var email = Environment.GetEnvironmentVariable("SystemAdminEmail");
 
@@ -72,8 +72,8 @@ public class UserRepository(
         };
         await CreateUserWithRoleAsync(user, password, "SystemAdmin");
         int saving = _context.SaveChanges();
-        if (saving<0) return SystemAdminSeedResultEnum.Failed;
-        return SystemAdminSeedResultEnum.Created;
+        if (saving<0) return EnumSystemAdminSeedResult.Failed;
+        return EnumSystemAdminSeedResult.Created;
     }
 
 }
