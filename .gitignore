@@ -381,4 +381,6 @@ FodyWeavers.xsd
 *.xlsx#
 /تجربة ملف Excel لبيانات مالية.xlsx
 /تجربة ملف Excel لبيانات مالية.xlsx
+*.eps
+*.svg
 /Front/.angular/cache/21.1.4/SaasTenant/vite/deps

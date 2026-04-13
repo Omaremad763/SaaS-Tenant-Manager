@@ -1,0 +1,20 @@
+﻿using Application.Contracts.IService;
+
+using AutoMapper;
+
+namespace Application.Contracts
+{
+    public interface ISaasServices
+    {
+        public IDbMigrationService DbMigrationService { get; }
+        public IUserService UserService { get; }
+        public ITenantFeatureService TenantFeatureService { get; }
+        public ITenantSubscriptionService TenantSubscriptionService { get; }
+        public ITenantService TenantService { get;}
+        public IFeatureService FeatureService {  get; }
+        public IApiLogService ApiLogService {  get; }
+        public IShipmentService ShipmentService {  get; }
+        public IClientService ClientService {  get; }
+
+    }
+}

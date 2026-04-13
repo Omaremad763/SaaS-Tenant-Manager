@@ -1,0 +1,133 @@
+<div class="p-6">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Client Management</h1>
+      <p class="text-gray-500 text-sm">
+        Manage merchants and vendors contracted with your shipping company
+      </p>
+    </div>
+    <button
+      (click)="openModal()"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
+    >
+      <span class="text-xl">+</span> Add New Client
+    </button>
+  </div>
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <table class="w-full text-left">
+      <thead class="bg-gray-50 text-gray-600 uppercase text-sm">
+        <tr>
+          <th class="px-6 py-4">Client Name</th>
+          <th class="px-6 py-4">Address</th>
+          <th class="px-6 py-4">Phone Number</th>
+          <th class="px-6 py-4 text-center">CreatedAt</th>
+          <th class="px-6 py-4 text-center">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-gray-100">
+        <tr *ngFor="let client of clients" class="hover:bg-gray-50 transition">
+          <td class="px-6 py-4 font-medium text-gray-900">{{ client.name }}</td>
+          <td class="px-6 py-4 text-gray-600">{{ client.address }}</td>
+          <td class="px-6 py-4 text-gray-600">{{ client.phone }}</td>
+          <td class="px-6 py-4 text-gray-600">{{ client.createdAt }}</td>
+
+          <td class="px-6 py-4 flex justify-center gap-3">
+            <button (click)="openModal(client)" class="text-blue-600 hover:underline">Edit</button>
+
+            <button (click)="deleteClient(client.id)" class="text-red-600 hover:underline">
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="isLoading" class="p-4 space-y-3">
+      <div *ngFor="let i of [1, 2, 3]" class="h-10 bg-gray-100 animate-pulse rounded"></div>
+    </div>
+
+    <div *ngIf="!isLoading && clients.length === 0" class="p-10 text-center text-gray-400">
+      No clients found. Click "Add New Client" to start.
+    </div>
+  </div>
+  <!-- Save/Edit Client Modal -->
+  <div
+    *ngIf="showModal"
+    class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm"
+    (click)="closeModal()"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 animate-in fade-in zoom-in duration-200 relative"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Close Button X -->
+      <button
+        (click)="closeModal()"
+        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+      >
+        &times;
+      </button>
+
+      <h3 class="text-xl font-bold mb-6">
+        {{ clientModel.id ? 'Edit Client Details' : 'Add New Client' }}
+      </h3>
+
+      <form (ngSubmit)="saveClient()" class="space-y-4">
+        <!-- Full Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input
+            [(ngModel)]="clientModel.name"
+            name="name"
+            type="text"
+            placeholder="e.g. Amazon Store"
+            class="w-full border rounded-lg p-2"
+            required
+          />
+        </div>
+
+        <!-- Address -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <input
+            [(ngModel)]="clientModel.address"
+            name="address"
+            type="text"
+            placeholder="e.g. 123 Main St"
+            class="w-full border rounded-lg p-2"
+          />
+        </div>
+
+        <!-- Phone -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <input
+            [(ngModel)]="clientModel.phone"
+            name="phone"
+            type="text"
+            placeholder="e.g. +1 555 123456"
+            class="w-full border rounded-lg p-2"
+          />
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end gap-4 mt-4">
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            {{ clientModel.id ? 'Save Changes' : 'Add Client' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
