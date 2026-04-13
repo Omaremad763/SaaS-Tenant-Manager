@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "API\Api.csproj", "{C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{E528BBC3-1C26-8C35-F682-23718816ADCD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaaSTestProject", "SaaSTestProject\SaaSTestProject.csproj", "{A300E5E3-F4A1-4DEF-AD1A-0DAB883191C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{E528BBC3-1C26-8C35-F682-23718816ADCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E528BBC3-1C26-8C35-F682-23718816ADCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E528BBC3-1C26-8C35-F682-23718816ADCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A300E5E3-F4A1-4DEF-AD1A-0DAB883191C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A300E5E3-F4A1-4DEF-AD1A-0DAB883191C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A300E5E3-F4A1-4DEF-AD1A-0DAB883191C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A300E5E3-F4A1-4DEF-AD1A-0DAB883191C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
