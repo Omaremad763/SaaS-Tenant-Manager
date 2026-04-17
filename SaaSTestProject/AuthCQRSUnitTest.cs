@@ -20,7 +20,8 @@ public class TenantRegistrationValidatorTests
     [InlineData("tenant-123")]
     public void Slug_ShouldNotHaveValidationError_WhenFormatIsValid(string slug)
     {
-        var model = new TenantRegistrationDto { Slug = slug };
+        var model = new TenantRegistrationDto
+        (Name: "", Slug: slug, PlanId: 0, Password: "", Email: "", TenantDomain: "");
         var result = _validator.TestValidate(model);
         result.ShouldNotHaveValidationErrorFor(x => x.Slug);
     }
@@ -31,7 +32,8 @@ public class TenantRegistrationValidatorTests
     [InlineData("UpperCase")]      
     public void Slug_ShouldHaveValidationError_WhenFormatIsInvalid(string slug)
     {
-        var model = new TenantRegistrationDto { Slug = slug };
+        var model = new TenantRegistrationDto
+        (Name: "", Slug: slug, PlanId: 0, Password: "", Email: "", TenantDomain: "");
         var result = _validator.TestValidate(model);
         result.ShouldHaveValidationErrorFor(x => x.Slug);
     }
@@ -40,7 +42,8 @@ public class TenantRegistrationValidatorTests
     [InlineData("test@domain.com")]
     public void Email_ShouldBeValid_WhenFormatIsCorrect(string email)
     {
-        var model = new TenantRegistrationDto { Email = email };
+        var model = new TenantRegistrationDto
+        (Name: "", Slug: "", PlanId: 0, Password: "", Email: email, TenantDomain: "");
         var result = _validator.TestValidate(model);
         result.ShouldNotHaveValidationErrorFor(x => x.Email);
     }
@@ -53,14 +56,15 @@ public class RegisterTenantHandlerTests
 
     public RegisterTenantHandlerTests()
     {
-        _serviceMock = new Mock<ISaasServices>();
+        _serviceMock = new Mock<ISaasServices> { DefaultValue = DefaultValue.Mock };
         _handler = new RegisterTenantHandler(_serviceMock.Object);
     }
 
     [Fact]
     public async Task Handle_RegisterTenantAdmin_ShouldCallUserServiceWithCorrectData()
     {
-        var dto = new TenantRegistrationDto { Email = "admin@tenant.com", Slug = "tenant-x" };
+        var dto = new TenantRegistrationDto
+(Name: "", Slug: "tenant-x", PlanId: 0, Password: "", Email: "admin@tenant.com", TenantDomain: "");
         var command = new RegisterTenantAdminCommand(dto);
         var expectedResponse = new ProvisioningStatusDto(Guid.NewGuid(), "In Progress", "Started");
 
