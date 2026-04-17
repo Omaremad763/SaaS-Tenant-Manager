@@ -384,3 +384,4 @@ FodyWeavers.xsd
 *.eps
 *.svg
 /Front/.angular/cache/21.1.4/SaasTenant/vite/deps
+/.husky/nppBackup
