@@ -2,7 +2,7 @@
 services:
   db:
     image: postgres:latest
-    container_name: dbPostgres
+    container_name: saas-postgres-db
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -40,7 +40,7 @@ services:
     build:
       context: ./Front
       dockerfile: Dockerfile
-    container_name: frontend-angular
+    container_name: saas-frontend-angular
     ports:
       - "4200:80"
     depends_on:

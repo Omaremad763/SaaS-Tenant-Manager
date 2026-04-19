@@ -27,11 +27,14 @@ jobs:
           echo "JWT_KEY=${{ secrets.JWT_KEY }}" >> .env
           echo "JWT_ISSUER=${{ secrets.JWT_ISSUER }}" >> .env
           echo "JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }}" >> .env
+          echo "SAASADMINDOMAIN=${{ secrets.SAASADMINDOMAIN }}" >> .env
+          echo "SYSTEMADMINEMAIL=${{ secrets.SYSTEMADMINEMAIL }}" >> .env
+          echo "SYSTEMADMINPASSWORD=${{ secrets.SYSTEMADMINPASSWORD }}" >> .env
 
           echo "JwtSettings__Key=${{ secrets.JWT_KEY }}" >> .env
           echo "JwtSettings__Issuer=${{ secrets.JWT_ISSUER }}" >> .env
           echo "JwtSettings__Audience=${{ secrets.JWT_AUDIENCE }}" >> .env
-          echo "ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${{ secrets.DB_NAME }};Username=${{ secrets.DB_USER }};Password=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DefaultConnection=Host=db;Port=5432;Database=${{ secrets.DB_NAME }};Username=${{ secrets.DB_USER }};Password=${{ secrets.DB_PASSWORD }}" >> .env
 
       - name: Clean Docker System & Force Rebuild
         run: |
@@ -56,7 +59,7 @@ jobs:
             echo "::endgroup::"
             
             echo "::group::Frontend (Angular) Logs"
-            docker logs frontend-angular
+            docker logs saas-frontend-angular
             echo "::endgroup::"
 
             echo "::group::Database (Postgres) Logs"
