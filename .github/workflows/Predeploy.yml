@@ -80,7 +80,7 @@ jobs:
           echo -e "\e[32m [V] SUCCESS: All services are healthy and running. \e[0m"
       - name: Shutdown Test Environment
         run: |
-             docker compose down -V
+             docker compose down -v
              docker volume rm $(docker volume ls -q) || true
 
       - name: Login to Docker Hub
