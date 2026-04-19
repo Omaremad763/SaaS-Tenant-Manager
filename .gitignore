@@ -391,3 +391,4 @@ FodyWeavers.xsd
 /.husky/nppBackup
 /Infra/Migrations/20260419015923_features Column.cs
 /Infra/Migrations/20260419015923_features Column.Designer.cs
+/.secrets
