@@ -6,13 +6,17 @@ using Domain.Entities.MasterDB;
 using Infra.Persistence.Contexts;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace Infra.Contracts_Implementation.Auth_Page;
 
 public class UserRepository(
     UserManager<User> userManager,
     RoleManager<UserRoles> roleManager,
-    MasterDbContext context) : IUserRepository
+    MasterDbContext context,
+    IConfiguration config
+    ) 
+    : IUserRepository
 {
     private readonly UserManager<User> _userManager = userManager;
     private readonly RoleManager<UserRoles> _roleManager = roleManager;
@@ -20,8 +24,8 @@ public class UserRepository(
 
     public async Task<IdentityResult> CreateUserWithRoleAsync(User user, string password, string roleName)
     {
-        var admindomin = Environment.GetEnvironmentVariable("SaasAdminDomain");
-        if (roleName == "SystemAdmin") { user.TenantDomain = admindomin; }
+        var AdminDomain = config["Adminsettings:SaasAdminDomain"];
+        if (roleName == "SystemAdmin") { user.TenantDomain = AdminDomain; }
         var roleExists = await _roleManager.RoleExistsAsync(roleName);
         if (!roleExists)
         {
@@ -64,8 +68,8 @@ public class UserRepository(
         var existingAdmin = await _userManager.GetUsersInRoleAsync("SystemAdmin");
 
         if (existingAdmin.Any()) return EnumSystemAdminSeedResult.AlreadyExists;
-        var password = Environment.GetEnvironmentVariable("SystemAdminPassword");
-        var email = Environment.GetEnvironmentVariable("SystemAdminEmail");
+        var password = config["Adminsettings:SystemAdminPassword"];
+        var email = config["Adminsettings:SystemAdminEmail"];
 
         var user = new User
         {

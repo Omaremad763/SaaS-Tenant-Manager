@@ -3,14 +3,16 @@
 using Hangfire;
 
 using Infra.Extentions;
+using Infra.Persistence.Contexts;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 
 using SaaS_Tenant_Manager;
 using SaaS_Tenant_Manager.Middlewares;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-builder.Services.AddServices();
+builder.Services.AddServices(builder.Configuration);
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -34,16 +36,39 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
-    var saasServices = scope.ServiceProvider.GetRequiredService<ISaasServices>();
-    var created = await saasServices.UserService.EnsureSystemAdminAsync();
-        Console.WriteLine(created);
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        var Mastercontext = services.GetRequiredService<MasterDbContext>();
+        logger.LogInformation("\x1b[36m[System] Starting Master Database Migrations...\x1b[0m");
+
+        await Mastercontext.Database.MigrateAsync();
+
+        logger.LogInformation("\x1b[32m[System] Master Database is up-to-date.\x1b[0m");
+
+        var saasServices = services.GetRequiredService<ISaasServices>();
+        logger.LogInformation("\x1b[34m[System] Ensuring System Admin User exists...\x1b[0m");
+
+        await saasServices.UserService.EnsureSystemAdminAsync();
+
+        logger.LogInformation("\x1b[32m[System] System Admin check passed successfully.\x1b[0m");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "\x1b[31m[Critical] Startup initialization failed!\x1b[0m");
+        throw;
+    }
 }
+
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseCors(policyName: "VercelPolicy");
+    app.UseHttpsRedirection();
 }
-app.UseHttpsRedirection();
-app.UseCors("VercelPolicy");
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 app.UseAuthentication();

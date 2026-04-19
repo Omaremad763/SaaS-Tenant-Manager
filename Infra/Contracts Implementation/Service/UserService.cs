@@ -13,13 +13,17 @@ using Domain.Entities.MasterDB;
 
 using MediatR;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 using EnumSystemAdminSeedResult = Application.Enums.EnumSystemAdminSeedResult;
 namespace User_service_Imp;
-public class UserService(IMapper _mapper, IMediator _mediator, IUnitofWork unitofwork) : IUserService
+public class UserService(IMapper _mapper, IMediator _mediator, 
+    IUnitofWork unitofwork,
+    IConfiguration config
+    ) : IUserService
 {
-    private static string GenerateJwt(User user, IList<string> roles)
+    private  string GenerateJwt(User user, IList<string> roles)
     {
         var claims = new List<Claim>
         {
@@ -33,14 +37,14 @@ public class UserService(IMapper _mapper, IMediator _mediator, IUnitofWork unito
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
-        var Issuer = Environment.GetEnvironmentVariable("SaasJWTIssuer");
-        var audience = Environment.GetEnvironmentVariable("SaasJWTAudience");
-        var JWTkey = Environment.GetEnvironmentVariable("SaasJwtKey");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTkey));
+        var jwtKey = config["JwtSettings:Key"];
+        var issuer = config["JwtSettings:Issuer"];
+        var audience = config["JwtSettings:Audience"];
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: Issuer,
+            issuer: issuer,
             audience: audience,
             claims: claims,
             expires: DateTime.UtcNow.AddHours(1),
@@ -51,7 +55,7 @@ public class UserService(IMapper _mapper, IMediator _mediator, IUnitofWork unito
     }
     private async Task<Tenant> AddTenantAsync(TenantRegistrationDto tenant)
     {
-        var baseConfig = Environment.GetEnvironmentVariable("SaasDatabaseConfig");
+        var baseConfig = config["DefaultConnection"];
         var TenantDBConnection = new Npgsql.NpgsqlConnectionStringBuilder(baseConfig)
         {
             Database = $"saas_{tenant.Slug.ToLower()}"

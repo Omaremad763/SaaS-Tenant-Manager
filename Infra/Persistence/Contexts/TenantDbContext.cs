@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace Infra.Persistence.Contexts;
 
@@ -77,7 +78,12 @@ public class TenantDbContextFactory : IDesignTimeDbContextFactory<TenantDbContex
 {
     public TenantDbContext CreateDbContext(string[] args)
     {
-        var databaseConfig = Environment.GetEnvironmentVariable("SaasDatabaseConfig");
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+         .SetBasePath(Directory.GetCurrentDirectory())
+         .AddJsonFile("appsettings.json", optional: true)
+         .AddEnvironmentVariables()
+         .Build();
+        var databaseConfig = configuration["DefaultConnection"];
         var optionsBuilder = new DbContextOptionsBuilder<TenantDbContext>();
         optionsBuilder.UseNpgsql(databaseConfig);
 

@@ -381,13 +381,13 @@ FodyWeavers.xsd
 !tsconfig.app.json
 !tsconfig.json
 !task-runner.json
+!proxy-conf.json
+!proxy.conf.json
 *.md
 /Test Project .xlsx
-/تجربة ملف Excel لبيانات مالية.xlsx
-*.xlsx#
-/تجربة ملف Excel لبيانات مالية.xlsx
-/تجربة ملف Excel لبيانات مالية.xlsx
 *.eps
 *.svg
 /Front/.angular/cache/21.1.4/SaasTenant/vite/deps
 /.husky/nppBackup
+/Infra/Migrations/20260419015923_features Column.cs
+/Infra/Migrations/20260419015923_features Column.Designer.cs

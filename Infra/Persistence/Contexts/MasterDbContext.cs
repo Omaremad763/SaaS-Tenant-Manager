@@ -6,6 +6,7 @@ using Domain.Entities.MasterDB;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace Infra.Persistence.Contexts;
 
@@ -154,6 +155,8 @@ public class MasterDbContext : IdentityDbContext<User, UserRoles, Guid>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDbContext).Assembly);
+
 
         modelBuilder.Entity<User>(entity =>
         {
@@ -166,7 +169,6 @@ public class MasterDbContext : IdentityDbContext<User, UserRoles, Guid>
         });
         ConfigureSubscriptionPlans(modelBuilder);
         ConfigurePlanFeatures(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(MasterDbContext).Assembly);
     }
 }
 
@@ -174,7 +176,12 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<MasterDbC
 {
     public MasterDbContext CreateDbContext(string[] args)
     {
-        var databaseConfig = Environment.GetEnvironmentVariable("SaasDatabaseConfig");
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+         .SetBasePath(Directory.GetCurrentDirectory())
+         .AddJsonFile("appsettings.json", optional: true)
+         .AddEnvironmentVariables()
+         .Build();
+        var databaseConfig = configuration["DefaultConnection"];
 
         var optionsBuilder = new DbContextOptionsBuilder<MasterDbContext>();
         optionsBuilder.UseNpgsql(databaseConfig);

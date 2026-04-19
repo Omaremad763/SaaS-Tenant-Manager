@@ -3,20 +3,17 @@ using System;
 using Infra.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infra.Migrations
+namespace Infra.Migrations.MasterMigrations
 {
     [DbContext(typeof(MasterDbContext))]
-    [Migration("20260228183450_tenantfeatures")]
-    partial class Tenantfeatures
+    partial class MasterDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,7 +100,7 @@ namespace Infra.Migrations
                             Description = "",
                             FeatureCode = "FEAT_AI_INSIGHTS",
                             FeatureName = "AI Insights",
-                            IsEnabledForSpecificTenant = true
+                            IsEnabledForSpecificTenant = false
                         },
                         new
                         {
@@ -112,7 +109,7 @@ namespace Infra.Migrations
                             Description = "",
                             FeatureCode = "FEAT_ADV_REPORTS",
                             FeatureName = "Advanced Reporting",
-                            IsEnabledForSpecificTenant = true
+                            IsEnabledForSpecificTenant = false
                         },
                         new
                         {
@@ -121,7 +118,7 @@ namespace Infra.Migrations
                             Description = "",
                             FeatureCode = "FEAT_MULTI_USER",
                             FeatureName = "MultiUser",
-                            IsEnabledForSpecificTenant = true
+                            IsEnabledForSpecificTenant = false
                         });
                 });
 

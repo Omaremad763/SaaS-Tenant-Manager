@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 
 using ApilogsServiceImp;
 
@@ -22,6 +23,7 @@ using Infrastructure.Contracts_Implementation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
@@ -29,17 +31,17 @@ namespace Infra.Extentions;
 
 public static class DependenciesCollector
 {
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
     {
         var generator = new IdGenerator(0);
-        var issuer = Environment.GetEnvironmentVariable("SaasJWTIssuer");
-        var audience = Environment.GetEnvironmentVariable("SaasJWTAudience");
-        var jwtKey = Environment.GetEnvironmentVariable("SaasJwtKey");
+        var JWTkey = config["JwtSettings:Key"];
+        var Issuer = config["JwtSettings:Issuer"];
+        var audience = config["JwtSettings:Audience"];
         var assembly = typeof(IApplicationHandlerMarker).Assembly;
-        var DatabaseConfig = Environment.GetEnvironmentVariable("SaasDatabaseConfig");
+        var DatabaseConfig = config["DefaultConnection"];
         services.AddHttpContextAccessor();
         services.AddDbContext<MasterDbContext>
-         (options =>
+         (optionsAction: options =>
          {
              options.UseNpgsql(DatabaseConfig);
          });
@@ -104,9 +106,9 @@ public static class DependenciesCollector
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = issuer,
+                    ValidIssuer = Issuer,
                     ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTkey)),
                     RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
                     NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
                 };

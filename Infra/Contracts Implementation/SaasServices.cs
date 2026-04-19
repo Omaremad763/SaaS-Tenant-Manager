@@ -12,17 +12,21 @@ using Infra.Contracts_Implementation.Service;
 
 using MediatR;
 
+using Microsoft.Extensions.Configuration;
+
 using User_service_Imp;
 
 namespace Infrastructure.Contracts_Implementation;
 
-public class SaasServices(IMapper mapper, IUnitofWork unitofWork, IServiceProvider provider
-    , IMediator mediator
+public class SaasServices(IMapper mapper, IUnitofWork unitofWork,
+    IServiceProvider provider
+    , IMediator mediator,
+    IConfiguration config
     )
 : ISaasServices
 {
     public IDbMigrationService DbMigrationService => new DbMigrationService(provider);
-    public IUserService UserService => new UserService(mapper, mediator, unitofWork);
+    public IUserService UserService => new UserService(mapper, mediator, unitofWork, config);
     public ITenantFeatureService TenantFeatureService => new TenantFeatureService(unitofWork);
     public ITenantSubscriptionService TenantSubscriptionService => new TenantSubscriptionService(unitofWork, mapper);
     public ITenantService TenantService => new TenantService(unitofWork);

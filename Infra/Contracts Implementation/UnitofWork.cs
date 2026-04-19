@@ -12,6 +12,7 @@ using Infra.TenantDBRepo;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Configuration;
 
 using TenantFeatureRepoImp;
 
@@ -22,11 +23,12 @@ namespace Infrastructure.Contracts_Implementation
         _userManager,
         RoleManager<UserRoles> roleManager,
         TenantDbContext tenantDb,
-        IIdGenerator<long> _idGenerator
+        IIdGenerator<long> _idGenerator,
+        IConfiguration config
         )
         : IUnitofWork
     {
-        public IUserRepository UserRepository => new UserRepository(_userManager, roleManager, Mastercontext);
+        public IUserRepository UserRepository => new UserRepository(_userManager, roleManager, Mastercontext,config);
         public ITenantFeatureRepo TenantFeatureRepo => new TenantFeatureRepo(Mastercontext);
         public IPlanFeatureRepo PlanFeatureRepo => new PlanFeatureRepo(Mastercontext);
         public ITenantSubscriptionRepo TenantSubscriptionRepo => new TenantSubscriptionRepo(Mastercontext);

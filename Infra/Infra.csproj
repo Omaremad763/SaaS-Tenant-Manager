@@ -24,14 +24,14 @@
   <ItemGroup>
 	<ProjectReference Include="..\Application\Application.csproj" />
   </ItemGroup>
-  <ItemGroup>
-	<Folder Include="Migrations\" />
-  </ItemGroup>
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Update="SonarAnalyzer.CSharp" Version="10.20.0.135146" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Migrations\MasterMigrations\" />
 	</ItemGroup>
 
 </Project>
