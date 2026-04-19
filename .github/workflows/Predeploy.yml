@@ -47,19 +47,37 @@ jobs:
           echo "Waiting for 20s for services to stabilize..."
           sleep 20
 
-          # فحص الحاويات التي فشلت
           EXITED_CONTAINERS=$(docker ps -a --format '{{.Names}}' --filter "status=exited")
 
           if [ -n "$EXITED_CONTAINERS" ]; then
             echo -e "\e[31m [X] ERROR: Some containers failed to stay up! \e[0m"
-            
-            # بنلف على كل الحاويات اللي في الكومبوز ونعرض سجلاتها بشكل منظم
             for container in $(docker compose ps --format '{{.Name}}'); do
-              echo "::group::Logs for $container"
-              docker logs "$container"
-              echo "::endgroup::"
-            done
+            echo "::group::Logs for $container"
+
+            echo "---- Docker Logs ----"
+            docker logs "$container" || true
+
+            echo "---- Last 100 lines ----"
+            docker logs --tail 100 "$container" || true
+
+            echo "---- Inspect State ----"
+            docker inspect "$container" --format='
+            Name: {{.Name}}
+            Status: {{.State.Status}}
+            ExitCode: {{.State.ExitCode}}
+            Error: {{.State.Error}}
+            StartedAt: {{.State.StartedAt}}
+            FinishedAt: {{.State.FinishedAt}}
+            ' || true
+
+            echo "::endgroup::"
+          done
+
+          echo "::group::Docker Compose Logs (All Services)"
+          docker compose logs --no-color
+          echo "::endgroup::"
             
+
             exit 1
           fi
 
