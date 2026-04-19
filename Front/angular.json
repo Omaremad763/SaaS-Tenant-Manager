@@ -55,6 +55,8 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+          "proxyConfig": "./src/proxy.conf.json" }, 
           "configurations": {
             "production": {
               "buildTarget": "SaasTenant:build:production"
