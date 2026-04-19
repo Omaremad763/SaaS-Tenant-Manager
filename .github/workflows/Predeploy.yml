@@ -39,33 +39,31 @@ jobs:
           docker system prune -af
           docker compose build --no-cache --pull
 
-      - name: Test Docker Compose Up
+      - name: Test Docker Compose Up & Group Logs
         run: |
           echo -e "\e[34m >>> Starting SaaS containers... \e[0m"
           docker compose up -d
-          echo "Waiting for services to initialize..."
-          sleep 15 
-          docker compose ps -a
 
-          EXITED_IDS=$(docker ps -a -f status=exited -q)
-          if [ -n "$EXITED_IDS" ]; then
-            echo -e "\e[31m [X] ERROR: One or more SaaS containers failed! \e[0m"
-            
-            echo "::group::Backend (API) Logs"
-            docker logs saas-backend-api
-            echo "::endgroup::"
-            
-            echo "::group::Frontend (Angular) Logs"
-            docker logs saas-frontend-angular
-            echo "::endgroup::"
+          echo "Waiting for 20s for services to stabilize..."
+          sleep 20
 
-            echo "::group::Database (Postgres) Logs"
-            docker logs saas-postgres-db
-            echo "::endgroup::"
+          # فحص الحاويات التي فشلت
+          EXITED_CONTAINERS=$(docker ps -a --format '{{.Names}}' --filter "status=exited")
+
+          if [ -n "$EXITED_CONTAINERS" ]; then
+            echo -e "\e[31m [X] ERROR: Some containers failed to stay up! \e[0m"
+            
+            # بنلف على كل الحاويات اللي في الكومبوز ونعرض سجلاتها بشكل منظم
+            for container in $(docker compose ps --format '{{.Name}}'); do
+              echo "::group::Logs for $container"
+              docker logs "$container"
+              echo "::endgroup::"
+            done
             
             exit 1
           fi
-          echo -e "\e[32m [V] SUCCESS: All SaaS services are up and healthy! \e[0m"
+
+          echo -e "\e[32m [V] SUCCESS: All services are healthy. \e[0m"
 
       - name: Shutdown Test Environment
         run: docker compose down -V
