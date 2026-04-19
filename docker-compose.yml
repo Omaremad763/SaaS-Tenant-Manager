@@ -13,7 +13,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - saas-network
 
@@ -27,12 +27,15 @@ services:
         condition: service_healthy
     ports:
       - "8080:8080"
-    env_file:
-      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-
       - DefaultConnection=Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+      - JwtSettings__Key=${JWT_KEY}
+      - JwtSettings__Issuer=${JWT_ISSUER}
+      - JwtSettings__Audience=${JWT_AUDIENCE}
+      - Adminsettings__SaasAdminDomain=${SAASADMINDOMAIN}
+      - Adminsettings__SystemAdminEmail=${SYSTEMADMINEMAIL}
+      - Adminsettings__SystemAdminPassword=${SYSTEMADMINPASSWORD}
     networks:
       - saas-network
 

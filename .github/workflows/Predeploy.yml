@@ -24,17 +24,14 @@ jobs:
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+
           echo "JWT_KEY=${{ secrets.JWT_KEY }}" >> .env
           echo "JWT_ISSUER=${{ secrets.JWT_ISSUER }}" >> .env
           echo "JWT_AUDIENCE=${{ secrets.JWT_AUDIENCE }}" >> .env
+
           echo "SAASADMINDOMAIN=${{ secrets.SAASADMINDOMAIN }}" >> .env
           echo "SYSTEMADMINEMAIL=${{ secrets.SYSTEMADMINEMAIL }}" >> .env
           echo "SYSTEMADMINPASSWORD=${{ secrets.SYSTEMADMINPASSWORD }}" >> .env
-
-          echo "JwtSettings__Key=${{ secrets.JWT_KEY }}" >> .env
-          echo "JwtSettings__Issuer=${{ secrets.JWT_ISSUER }}" >> .env
-          echo "JwtSettings__Audience=${{ secrets.JWT_AUDIENCE }}" >> .env
-          echo "DefaultConnection=Host=db;Port=5432;Database=${{ secrets.DB_NAME }};Username=${{ secrets.DB_USER }};Password=${{ secrets.DB_PASSWORD }}" >> .env
 
       - name: Clean Docker System & Force Rebuild
         run: |
@@ -71,7 +68,7 @@ jobs:
           echo -e "\e[32m [V] SUCCESS: All SaaS services are up and healthy! \e[0m"
 
       - name: Shutdown Test Environment
-        run: docker compose down
+        run: docker compose down -V
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
