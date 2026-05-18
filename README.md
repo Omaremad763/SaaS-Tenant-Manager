@@ -9,6 +9,5 @@
 [![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat&logo=nginx&logoColor=white)](https://github.com/Omaremad763/SaaS-Tenant-Manager)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)](https://github.com/Omaremad763/SaaS-Tenant-Manager)
 [![Clean Architecture](https://img.shields.io/badge/Architecture-Clean--Architecture-blueviolet?style=flat)](https://github.com/Omaremad763/SaaS-Tenant-Manager)
-[![Code Style](https://img.shields.io/badge/Code_Style-Linted--&--Formatted-orange?style=flat&logo=eslint&logoColor=white)](https://github.com/Omaremad763/SaaS-Tenant-Manager)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](https://github.com/Omaremad763/SaaS-Tenant-Manager/blob/main/LICENSE)
 # SaaS Tenant Manager
