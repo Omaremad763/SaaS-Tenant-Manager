@@ -26,32 +26,34 @@ public class TenantDbContext(
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (optionsBuilder.IsConfigured)
-        {
-            base.OnConfiguring(optionsBuilder);
-            return;
-        }
+        //todo fix this and add middleware , its job to get the suitable connection string 
         //Database-per-Tenant Strategy filter
-        var user = _httpContextAccessor?.HttpContext?.User;
-        if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+        try
         {
-            var tenantIdClaim = user.Claims.FirstOrDefault(c => c.Type == "TenantId")?.Value;
-
-            if (!string.IsNullOrWhiteSpace(tenantIdClaim) && _masterDb != null)
+            var user = _httpContextAccessor?.HttpContext?.User;
+            if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
             {
-                var connectionString = _masterDb.Tenants
-                    .AsNoTracking()
-                    .Where(t => t.Id.ToString() == tenantIdClaim)
-                    .Select(t => t.ConnectionString)
-                    .FirstOrDefault();
+                var tenantIdClaim = user.Claims.FirstOrDefault(c => c.Type == "TenantId")?.Value;
 
-                if (!string.IsNullOrWhiteSpace(connectionString))
+                if (!string.IsNullOrWhiteSpace(tenantIdClaim) && _masterDb != null)
                 {
-                    optionsBuilder.UseNpgsql(connectionString);
-                    return;
+                    var connectionString = _masterDb.Tenants
+                        .AsNoTracking()
+                        .Where(t => t.Id.ToString() == tenantIdClaim)
+                        .Select(t => t.ConnectionString)
+                        .FirstOrDefault();
+
+                    if (!string.IsNullOrWhiteSpace(connectionString))
+                    {
+                        optionsBuilder.UseNpgsql(connectionString);
+                        return;
+                    }
                 }
             }
-            base.OnConfiguring(optionsBuilder);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Failed to configure TenantDbContext. See inner exception for details.", ex);
         }
     }
 

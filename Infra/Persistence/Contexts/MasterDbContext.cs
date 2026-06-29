@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Infra.Persistence.Contexts;
 
-public class MasterDbContext : IdentityDbContext<User, UserRoles, Guid>
+public class MasterDbContext(DbContextOptions<MasterDbContext> options) : IdentityDbContext<User, UserRoles, Guid>(options)
 {
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<SubscriptionPlan> SubscriptionPlans => Set<SubscriptionPlan>();
@@ -19,10 +19,6 @@ public class MasterDbContext : IdentityDbContext<User, UserRoles, Guid>
     public DbSet<PlanFeature> PlanFeatures => Set<PlanFeature>();
     public DbSet<TenantSubscription> TenantSubscriptions => Set<TenantSubscription>();
     public DbSet<TenantFeature> TenantFeatures => Set<TenantFeature>();
-
-    public MasterDbContext(DbContextOptions<MasterDbContext> options) : base(options)
-    {
-    }
 
     protected void ConfigureSubscriptionPlans(ModelBuilder modelBuilder)
     {

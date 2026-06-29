@@ -10,14 +10,13 @@ public class TenantSecurityMiddleware(RequestDelegate next)
     {
         if (context.User.Identity?.IsAuthenticated == true)
         {
-            var userTenantId = context.User.FindFirstValue("TenantId");
             var isSystemAdmin = context.User.IsInRole("SystemAdmin");
             if (isSystemAdmin)
             {
                 await _next(context);
                 return;
             }
-
+            var userTenantId = context.User.FindFirstValue("TenantId");
             var requestdomain = context.Request.RouteValues["tenantSlug"]?.ToString();
             if (!string.IsNullOrEmpty(requestdomain))
             {
