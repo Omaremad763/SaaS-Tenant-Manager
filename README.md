@@ -104,6 +104,32 @@ Instead of storing all companies inside the same database, every tenant receives
 This architecture is commonly known as **Database-per-Tenant Multi-Tenancy**, and implementing it became the central learning objective of this project.
 
 ---
+# 🖼️ Screenshots
+
+## Admin Register
+
+![Dashboard](docs/images/admin.png)
+
+---
+## Mangmanet Console Only For tenant Admins
+
+![Dashboard](docs/images/mangment.png)
+
+---
+## shipments
+
+![Dashboard](docs/images/shipments.png)
+
+---
+## Clients
+
+![Dashboard](docs/images/Clients.png)
+
+---
+
+## shipments wizard
+
+![Dashboard](docs/images/wizard.png)
 
 # 🛠 Technology Stack
 
